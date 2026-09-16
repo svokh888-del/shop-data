@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>電商商品與促銷中控後台</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --danger: #ef4444;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --border: #e5e7eb;
+      --text: #1f2937;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 20px; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    .card { background: var(--card-bg); border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 24px; border: 1px solid var(--border); }
+    h2 { font-size: 20px; margin-bottom: 16px; border-left: 4px solid var(--primary); padding-left: 10px; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #4b5563; }
+    input[type="text"], input[type="datetime-local"], textarea {
+      width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 14px; outline: none; transition: 0.2s;
+    }
+    input:focus, textarea:focus { border-color: var(--primary); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--primary); color: white; border: none; padding: 10px 20px;
+      border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;
+    }
+    .btn:hover { background: var(--primary-dark); }
+    .btn-danger { background: var(--danger); }
+    .btn-danger:hover { background: #dc2626; }
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-top: 16px; }
+    .p-item { background: #fafafa; border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .p-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: 700; color: #111827; }
+    .tag { background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    .row { display: flex; gap: 10px; }
+    .row .form-group { flex: 1; }
+    #loginPanel { max-width: 450px; margin: 80px auto; }
+    .save-bar { position: sticky; bottom: 20px; z-index: 100; text-align: center; }
+    .save-bar .btn { padding: 14px 40px; font-size: 16px; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- 登入卡片 -->
+  <div id="loginPanel" class="card">
+    <h2>後台登入驗證</h2>
+    <div class="form-group">
+      <label>請貼上 GitHub Token 金鑰：</label>
+      <input type="text" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx">
+    </div>
+    <button class="btn" style="width: 100%;" onclick="login()">驗證並讀取資料</button>
+  </div>
+
+  <!-- 管理操作區 (預設隱藏) -->
+  <div id="adminPanel" style="display: none;">
+    <!-- 倒數時間設定 -->
+    <div class="card">
+      <h2>⏰ 限時促銷倒數設定</h2>
+      <div class="form-group">
+        <label>活動結束時間（若無倒數留空即可）：</label>
+        <input type="datetime-local" id="countdownEnd">
+      </div>
+    </div>
+
+    <!-- 試算表一鍵貼上匯入 -->
+    <div class="card">
+      <h2>📋 Google 試算表快速貼上匯入</h2>
+      <p style="font-size: 13px; color: #6b7280; margin-bottom: 10px;">
+        在 Google 試算表反白複製你的商品列（支援欄位：商品代碼、中文品名、原價、特價），直接貼在下方：
+      </p>
+      <textarea id="tsvInput" rows="4" placeholder="例如從試算表複製後貼上：&#10;sp01	SPI2RO 雙藻錠 1組	1980	1980&#10;sp02	SPI2RO 雙藻錠 2組	3960	3480"></textarea>
+      <button class="btn" style="margin-top: 10px;" onclick="importFromTSV()">自動分析並填入商品清單</button>
+    </div>
+
+    <!-- 商品管理清單 -->
+    <div class="card">
+      <h2>📦 商品資料庫列表</h2>
+      <div id="productContainer" class="product-grid"></div>
+    </div>
+
+    <!-- 儲存懸浮列 -->
+    <div class="save-bar">
+      <button class="btn" onclick="saveToGitHub()">🚀 一鍵儲存並發布到全站</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const OWNER = "svokh888-del";
+  const REPO = "shop-data";
+  const PATH = "data.js";
+  let currentFileSha = "";
+  let shopData = { countdownEnd: "", products: {} };
+
+  function login() {
+    const token = document.getElementById("tokenInput").value.trim();
+    if (!token) return alert("請輸入 Token 金鑰");
+    localStorage.setItem("gh_token", token);
+    loadData();
+  }
+
+  window.onload = function() {
+    const token = localStorage.getItem("gh_token");
+    if (token) {
+      document.getElementById("tokenInput").value = token;
+      loadData();
+    }
+  };
+
+  async function loadData() {
+    const token = localStorage.getItem("gh_token");
+    try {
+      const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`, {
+        headers: { "Authorization": `token ${token}` }
+      });
+      if (!res.ok) throw new Error("讀取失敗，請確認 Token 是否正確且具備 repo 權限");
+      const json = await res.json();
+      currentFileSha = json.sha;
+      const decodedContent = decodeURIComponent(escape(atob(json.content)));
+      
+      const match = decodedContent.match(/window\.SHOP_DATA\s*=\s*(\{[\s\S]*\});?/);
+      if (match && match[1]) {
+        shopData = eval(`(${match[1]})`);
+      }
+      renderAdmin();
+      document.getElementById("loginPanel").style.display = "none";
+      document.getElementById("adminPanel").style.display = "block";
+    } catch (e) {
+      alert(e.message);
+    }
+  }
+
+  function renderAdmin() {
+    document.getElementById("countdownEnd").value = shopData.countdownEnd || "";
+    const container = document.getElementById("productContainer");
+    container.innerHTML = "";
+
+    for (const [code, item] of Object.entries(shopData.products)) {
+      const div = document.createElement("div");
+      div.className = "p-item";
+      div.innerHTML = `
+        <div class="p-header">
+          <span>${item.name || code}</span>
+          <span class="tag">${code}</span>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label>原價</label>
+            <input type="text" id="orig_${code}" value="${item.originalPrice || ''}">
+          </div>
+          <div class="form-group">
+            <label>促銷優惠價</label>
+            <input type="text" id="sale_${code}" value="${item.salePrice || ''}">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label>促銷主標 (例: 買3送1)</label>
+            <input type="text" id="promo_${code}" value="${item.promoTitle || ''}">
+          </div>
+          <div class="form-group">
+            <label>規格文字</label>
+            <input type="text" id="spec_${code}" value="${item.spec || ''}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>贈品名稱標籤 (若無請留空)</label>
+          <input type="text" id="gift_${code}" value="${item.giftName || ''}" placeholder="例: 虎奶菇養氣飲體驗包">
+        </div>
+        <div class="form-group">
+          <label>分期付款說明 (若無請留空)</label>
+          <input type="text" id="inst_${code}" value="${item.installmentText || ''}" placeholder="例: 3期0利率">
+        </div>
+      `;
+      container.appendChild(div);
+    }
+  }
+
+  function importFromTSV() {
+    const raw = document.getElementById("tsvInput").value.trim();
+    if (!raw) return alert("請先貼上試算表內容！");
+    const rows = raw.split("\n");
+    let count = 0;
+
+    rows.forEach(row => {
+      const cols = row.split("\t").map(c => c.trim());
+      if (cols.length >= 3) {
+        const code = cols[0];
+        if (!shopData.products[code]) {
+          shopData.products[code] = { name: "", originalPrice: "", salePrice: "" };
+        }
+        shopData.products[code].name = cols[1] || shopData.products[code].name;
+        shopData.products[code].originalPrice = cols[2].replace(/,/g, '') || shopData.products[code].originalPrice;
+        shopData.products[code].salePrice = (cols[3] ? cols[3].replace(/,/g, '') : cols[2].replace(/,/g, '')) || shopData.products[code].salePrice;
+        count++;
+      }
+    });
+
+    renderAdmin();
+    alert(`成功匯入並更新了 ${count} 筆商品資料！別忘了點擊下方「儲存發布」！`);
+    document.getElementById("tsvInput").value = "";
+  }
+
+  async function saveToGitHub() {
+    const token = localStorage.getItem("gh_token");
+    shopData.countdownEnd = document.getElementById("countdownEnd").value;
+
+    for (const code of Object.keys(shopData.products)) {
+      const origInput = document.getElementById(`orig_${code}`);
+      const saleInput = document.getElementById(`sale_${code}`);
+      const promoInput = document.getElementById(`promo_${code}`);
+      const specInput = document.getElementById(`spec_${code}`);
+      const giftInput = document.getElementById(`gift_${code}`);
+      const instInput = document.getElementById(`inst_${code}`);
+
+      if (origInput) {
+        const orig = Number(origInput.value) || 0;
+        const sale = Number(saleInput.value) || 0;
+        shopData.products[code].originalPrice = orig;
+        shopData.products[code].salePrice = sale;
+        shopData.products[code].saveAmount = orig > sale ? (orig - sale) : 0;
+        shopData.products[code].promoTitle = promoInput.value;
+        shopData.products[code].spec = specInput.value;
+        shopData.products[code].giftName = giftInput.value;
+        shopData.products[code].installmentText = instInput.value;
+      }
+    }
+
+    const fileContent = "window.SHOP_DATA = " + JSON.stringify(shopData, null, 2) + ";";
+    const encoded = btoa(unescape(encodeURIComponent(fileContent)));
+
+    try {
+      const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `token ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: "Update shop-data via Admin Panel",
+          content: encoded,
+          sha: currentFileSha
+        })
+      });
+
+      if (!res.ok) throw new Error("儲存失敗，請檢查金鑰或網路狀態");
+      const data = await res.json();
+      currentFileSha = data.content.sha;
+      alert("🎉 儲存發布成功！全站資料已同步更新！");
+    } catch (e) {
+      alert(e.message);
+    }
+  }
+</script>
+</body>
+</html>

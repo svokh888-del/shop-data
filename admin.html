@@ -3,91 +3,197 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>電商商品與促銷中控後台 (護眼版)</title>
+  <title>電商商品與促銷中控台</title>
   <style>
     :root {
-      --bg: #121417;
-      --card-bg: #1e2229;
-      --card-inner: #262c36;
+      --bg: #0f172a;
+      --panel-bg: #1e293b;
+      --card-bg: #334155;
       --primary: #10b981;
       --primary-hover: #059669;
       --accent: #38bdf8;
-      --border: #333a46;
-      --text: #e2e8f0;
+      --border: #475569;
+      --text: #f1f5f9;
       --text-muted: #94a3b8;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 24px 16px; }
-    .container { max-width: 1100px; margin: 0 auto; }
-    .card { background: var(--card-bg); border-radius: 12px; padding: 24px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); margin-bottom: 24px; border: 1px solid var(--border); }
-    h2 { font-size: 18px; margin-bottom: 16px; border-left: 4px solid var(--primary); padding-left: 12px; color: #f8fafc; font-weight: 600; }
-    .form-group { margin-bottom: 14px; }
-    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text-muted); }
-    input[type="text"], input[type="datetime-local"], textarea {
-      width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-inner); color: #fff; font-size: 14px; outline: none; transition: 0.2s;
+    body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* 置頂工具列 */
+    header {
+      background: var(--panel-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-shrink: 0;
     }
-    input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(16,185,129,0.2); }
+    .header-left, .header-right { display: flex; align-items: center; gap: 14px; }
+    .title { font-weight: 700; font-size: 16px; color: #fff; white-space: nowrap; }
+
     .btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      background: var(--primary); color: #022c22; border: none; padding: 10px 20px;
-      border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--card-bg); color: #fff; border: 1px solid var(--border);
+      padding: 7px 14px; border-radius: 6px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: 0.15s; white-space: nowrap;
     }
-    .btn:hover { background: var(--primary-hover); color: #fff; }
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-top: 16px; }
-    .p-item { background: var(--card-inner); border: 1px solid var(--border); border-radius: 10px; padding: 16px; position: relative; }
-    .p-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 700; color: #fff; }
-    .tag { background: rgba(56, 189, 248, 0.15); color: var(--accent); padding: 3px 8px; border-radius: 6px; font-size: 12px; font-family: monospace; }
-    .row { display: flex; gap: 10px; }
+    .btn:hover { background: #475569; }
+    .btn-primary { background: var(--primary); color: #022c22; border: none; }
+    .btn-primary:hover { background: var(--primary-hover); color: #fff; }
+
+    /* 主雙欄版型 */
+    .main-layout { display: flex; flex: 1; overflow: hidden; }
+    
+    /* 左側母項目 */
+    .sidebar {
+      width: 280px;
+      background: var(--panel-bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .sidebar-title {
+      padding: 14px 18px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .category-item {
+      padding: 14px 18px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 500;
+      transition: 0.15s;
+    }
+    .category-item:hover { background: rgba(255,255,255,0.04); }
+    .category-item.active { background: #24344d; border-left: 4px solid var(--accent); color: #fff; }
+    .badge { background: #475569; color: #e2e8f0; font-size: 11px; padding: 2px 6px; border-radius: 10px; }
+
+    /* 右側子項目編輯區 */
+    .content-area {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      background: var(--bg);
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 16px;
+    }
+    .sub-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    }
+    .sub-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sub-title { font-weight: 700; font-size: 15px; color: #fff; }
+    .code-tag { background: rgba(56, 189, 248, 0.15); color: var(--accent); font-family: monospace; font-size: 12px; padding: 2px 6px; border-radius: 4px; }
+
+    /* 表單元件 */
+    .form-group { margin-bottom: 10px; }
+    label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+    input[type="text"], input[type="datetime-local"], textarea {
+      width: 100%; padding: 8px 10px; background: #0f172a; border: 1px solid var(--border);
+      border-radius: 6px; color: #fff; font-size: 13px; outline: none; transition: 0.15s;
+    }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    .row { display: flex; gap: 8px; }
     .row .form-group { flex: 1; }
-    #loginPanel { max-width: 440px; margin: 100px auto; }
-    .save-bar { position: sticky; bottom: 20px; z-index: 100; text-align: center; }
-    .save-bar .btn { padding: 15px 44px; font-size: 16px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35); }
-    .desc-box { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.6; }
+
+    /* 匯入 Modal 彈窗 */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none;
+      align-items: center; justify-content: center; z-index: 1000;
+    }
+    .modal-box {
+      background: var(--panel-bg); width: 90%; max-width: 560px; border-radius: 10px;
+      padding: 20px; border: 1px solid var(--border);
+    }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; }
+
+    /* 登入小框 */
+    #loginMask {
+      position: fixed; inset: 0; background: var(--bg); display: flex;
+      align-items: center; justify-content: center; z-index: 2000;
+    }
+    .login-box { background: var(--panel-bg); padding: 30px; border-radius: 12px; width: 400px; border: 1px solid var(--border); }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <!-- 登入卡片 -->
-  <div id="loginPanel" class="card">
-    <h2>後台登入驗證</h2>
+<!-- 登入驗證層 -->
+<div id="loginMask">
+  <div class="login-box">
+    <h3 style="margin-bottom: 14px;">後台金鑰驗證</h3>
     <div class="form-group">
-      <label>GitHub Token 專屬金鑰：</label>
-      <input type="text" id="tokenInput" placeholder="貼上 ghp_xxxxxxxxxxxx">
+      <label>GitHub Personal Access Token：</label>
+      <input type="text" id="tokenInput" placeholder="ghp_...">
     </div>
-    <button class="btn" style="width: 100%;" onclick="login()">解鎖進入後台</button>
+    <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="login()">驗證解鎖</button>
+  </div>
+</div>
+
+<!-- 頂部工具列 -->
+<header>
+  <div class="header-left">
+    <div class="title">⚡ 促銷中控台</div>
+    <button class="btn" onclick="openModal()">📋 匯入試算表</button>
+    <div style="display: flex; align-items: center; gap: 8px; margin-left: 10px;">
+      <span style="font-size: 13px; color: var(--text-muted);">⏰ 倒數截止：</span>
+      <input type="datetime-local" id="countdownEnd" style="width: 200px; padding: 4px 8px;">
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-primary" onclick="saveToGitHub()">🚀 儲存並發布到全站</button>
+  </div>
+</header>
+
+<!-- 主工作區域 -->
+<div class="main-layout">
+  <!-- 左欄：母項目分類 -->
+  <div class="sidebar">
+    <div class="sidebar-title">商品母項目列表</div>
+    <div id="categoryList"></div>
   </div>
 
-  <!-- 管理主面板 -->
-  <div id="adminPanel" style="display: none;">
-    <!-- 倒數時間 -->
-    <div class="card">
-      <h2>⏰ 限時促銷倒數設定</h2>
-      <div class="form-group">
-        <label>活動截止時間（結束後前台自動恢復原價，留空代表無倒數）：</label>
-        <input type="datetime-local" id="countdownEnd">
-      </div>
-    </div>
+  <!-- 右欄：子項目組數編輯 -->
+  <div class="content-area">
+    <div id="gridContainer" class="grid-container"></div>
+  </div>
+</div>
 
-    <!-- 試算表一鍵貼上匯入 -->
-    <div class="card">
-      <h2>📋 Google 試算表無腦貼上匯入</h2>
-      <div class="desc-box">
-        直接在 Google 試算表把包含「商品代碼、系列、品名、原價、優惠價...」的整排表格反白複製（連同欄位標題一起複製也沒問題），按貼上即可。系統會自動抓取需要的數據，其餘不相關欄位自動略過！
-      </div>
-      <textarea id="tsvInput" rows="5" placeholder="直接在此貼上（Ctrl + V）試算表內容..."></textarea>
-      <button class="btn" style="margin-top: 10px;" onclick="importFromTSV()">自動智能辨識並填入</button>
-    </div>
-
-    <!-- 商品列表 -->
-    <div class="card">
-      <h2>📦 商品資料庫列表</h2>
-      <div id="productContainer" class="product-grid"></div>
-    </div>
-
-    <!-- 儲存按鈕 -->
-    <div class="save-bar">
-      <button class="btn" onclick="saveToGitHub()">🚀 一鍵儲存並發布到全站</button>
+<!-- 匯入彈跳視窗 -->
+<div id="importModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3 style="margin-bottom: 8px;">貼上 Google 試算表內容</h3>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+      請在 Google 試算表中框選並複製你的表格（連同商品代碼、中文、原價、優惠價等整排貼上）：
+    </p>
+    <textarea id="tsvInput" rows="8" placeholder="在此貼上 (Ctrl+V)..."></textarea>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="importFromTSV()">自動識別並匯入</button>
     </div>
   </div>
 </div>
@@ -98,6 +204,10 @@
   const PATH = "data.js";
   let currentFileSha = "";
   let shopData = { countdownEnd: "", products: {} };
+  let selectedCategory = "";
+
+  function openModal() { document.getElementById("importModal").style.display = "flex"; }
+  function closeModal() { document.getElementById("importModal").style.display = "none"; }
 
   function login() {
     const token = document.getElementById("tokenInput").value.trim();
@@ -120,7 +230,7 @@
       const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`, {
         headers: { "Authorization": `token ${token}` }
       });
-      if (!res.ok) throw new Error("讀取失敗，請確認 Token 是否正確且已勾選 repo 權限");
+      if (!res.ok) throw new Error("讀取失敗，請確認 Token 與權限");
       const json = await res.json();
       currentFileSha = json.sha;
       const decodedContent = decodeURIComponent(escape(atob(json.content)));
@@ -129,147 +239,161 @@
       if (match && match[1]) {
         shopData = eval(`(${match[1]})`);
       }
-      renderAdmin();
-      document.getElementById("loginPanel").style.display = "none";
-      document.getElementById("adminPanel").style.display = "block";
+      document.getElementById("loginMask").style.display = "none";
+      document.getElementById("countdownEnd").value = shopData.countdownEnd || "";
+      renderLayout();
     } catch (e) {
       alert(e.message);
     }
   }
 
-  function renderAdmin() {
-    document.getElementById("countdownEnd").value = shopData.countdownEnd || "";
-    const container = document.getElementById("productContainer");
+  // 取得母品名分類邏輯
+  function getCategoryName(name) {
+    if (!name) return "未分類商品";
+    return name.replace(/\s*\d+\s*(組|包|盒).*$/, '').trim();
+  }
+
+  function renderLayout() {
+    const categories = {};
+    for (const [code, item] of Object.entries(shopData.products)) {
+      const cat = getCategoryName(item.name || code);
+      if (!categories[cat]) categories[cat] = [];
+      categories[cat].push(code);
+    }
+
+    const catList = document.getElementById("categoryList");
+    catList.innerHTML = "";
+
+    const catKeys = Object.keys(categories);
+    if (!selectedCategory || !categories[selectedCategory]) {
+      selectedCategory = catKeys[0] || "";
+    }
+
+    catKeys.forEach(cat => {
+      const div = document.createElement("div");
+      div.className = `category-item ${cat === selectedCategory ? 'active' : ''}`;
+      div.innerHTML = `
+        <span>${cat}</span>
+        <span class="badge">${categories[cat].length} 組</span>
+      `;
+      div.onclick = () => {
+        selectedCategory = cat;
+        renderLayout();
+      };
+      catList.appendChild(div);
+    });
+
+    renderSubItems(categories[selectedCategory] || []);
+  }
+
+  function renderSubItems(codes) {
+    const container = document.getElementById("gridContainer");
     container.innerHTML = "";
 
-    for (const [code, item] of Object.entries(shopData.products)) {
+    codes.forEach(code => {
+      const item = shopData.products[code];
       const div = document.createElement("div");
-      div.className = "p-item";
+      div.className = "sub-card";
       div.innerHTML = `
-        <div class="p-header">
-          <span style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.name || code}</span>
-          <span class="tag">${code}</span>
+        <div class="sub-header">
+          <span class="sub-title">${item.name || code}</span>
+          <span class="code-tag">${code}</span>
         </div>
         <div class="row">
           <div class="form-group">
             <label>原價</label>
-            <input type="text" id="orig_${code}" value="${item.originalPrice ?? ''}">
+            <input type="text" id="orig_${code}" value="${item.originalPrice ?? ''}" onchange="syncField('${code}')">
           </div>
           <div class="form-group">
-            <label>優惠價</label>
-            <input type="text" id="sale_${code}" value="${item.salePrice ?? ''}">
+            <label>優惠特價</label>
+            <input type="text" id="sale_${code}" value="${item.salePrice ?? ''}" onchange="syncField('${code}')">
           </div>
         </div>
         <div class="row">
           <div class="form-group">
             <label>促銷標籤 (例: 買3送1)</label>
-            <input type="text" id="promo_${code}" value="${item.promoTitle || ''}">
+            <input type="text" id="promo_${code}" value="${item.promoTitle || ''}" onchange="syncField('${code}')">
           </div>
           <div class="form-group">
-            <label>規格描述 (例: 20入×3盒)</label>
-            <input type="text" id="spec_${code}" value="${item.spec || ''}">
+            <label>規格文字 (例: 20入×3盒)</label>
+            <input type="text" id="spec_${code}" value="${item.spec || ''}" onchange="syncField('${code}')">
           </div>
         </div>
         <div class="form-group">
-          <label>贈品名稱 (無贈品留空)</label>
-          <input type="text" id="gift_${code}" value="${item.giftName || ''}" placeholder="例: 虎奶菇養氣飲體驗包">
+          <label>贈品名稱標籤 (無贈品請留空)</label>
+          <input type="text" id="gift_${code}" value="${item.giftName || ''}" placeholder="例: 虎奶菇體驗包" onchange="syncField('${code}')">
         </div>
         <div class="form-group">
-          <label>分期付款折扣說明 (留空則不顯示)</label>
-          <input type="text" id="inst_${code}" value="${item.installmentText || ''}" placeholder="例: 3期0利率">
+          <label>分期說明 (留空不顯示)</label>
+          <input type="text" id="inst_${code}" value="${item.installmentText || ''}" placeholder="例: 3期0利率" onchange="syncField('${code}')">
         </div>
       `;
       container.appendChild(div);
-    }
+    });
+  }
+
+  function syncField(code) {
+    if (!shopData.products[code]) return;
+    const orig = Number(document.getElementById(`orig_${code}`).value) || 0;
+    const sale = Number(document.getElementById(`sale_${code}`).value) || 0;
+    shopData.products[code].originalPrice = orig;
+    shopData.products[code].salePrice = sale;
+    shopData.products[code].saveAmount = (orig > sale) ? (orig - sale) : 0;
+    shopData.products[code].promoTitle = document.getElementById(`promo_${code}`).value;
+    shopData.products[code].spec = document.getElementById(`spec_${code}`).value;
+    shopData.products[code].giftName = document.getElementById(`gift_${code}`).value;
+    shopData.products[code].installmentText = document.getElementById(`inst_${code}`).value;
   }
 
   function importFromTSV() {
     const raw = document.getElementById("tsvInput").value.trim();
-    if (!raw) return alert("請先貼上試算表內容！");
+    if (!raw) return alert("請先貼上內容！");
     const rows = raw.split("\n");
     let count = 0;
 
     rows.forEach(row => {
       const cols = row.split("\t").map(c => c.trim());
-      // 判斷是否為標題列，如果是直接跳過
-      if (cols[0] === "商品代碼" || cols[0] === "") return;
+      if (cols[0] === "商品代碼" || !cols[0]) return;
 
-      const code = cols[0]; // A 欄: 商品代碼
-      if (!code) return;
+      const code = cols[0];
+      if (!shopData.products[code]) shopData.products[code] = {};
 
-      if (!shopData.products[code]) {
-        shopData.products[code] = {};
-      }
-
-      // 如果有中文名稱欄位(E欄)
       const engName = cols[3] || "";
       const chName = cols[4] || "";
       const groupCount = cols[5] ? `${cols[5]}組` : "";
       shopData.products[code].name = `${engName} ${chName} ${groupCount}`.trim() || shopData.products[code].name || code;
       
-      // 內容規格(G欄)
       if (cols[6]) {
         shopData.products[code].spec = cols[6] + (cols[5] ? ` (共${cols[5]}組)` : "");
       }
 
-      // 處理原價(H欄) 與 優惠價(I欄)
-      const parsePrice = (val) => {
-        if (!val || val === "待補") return "";
-        const num = Number(val.replace(/,/g, ''));
-        return isNaN(num) ? "" : num;
-      };
+      const parsePrice = (v) => (!v || v === "待補") ? "" : (Number(v.replace(/,/g, '')) || "");
+      const orig = parsePrice(cols[7]);
+      const sale = parsePrice(cols[8]);
 
-      const origPrice = parsePrice(cols[7]);
-      const salePrice = parsePrice(cols[8]);
+      if (orig !== "") shopData.products[code].originalPrice = orig;
+      if (sale !== "") shopData.products[code].salePrice = sale;
 
-      if (origPrice !== "") shopData.products[code].originalPrice = origPrice;
-      if (salePrice !== "") shopData.products[code].salePrice = salePrice;
-
-      // 現省(J欄)
-      const savePrice = parsePrice(cols[9]);
-      if (savePrice !== "") {
-        shopData.products[code].saveAmount = savePrice;
-      } else if (origPrice && salePrice && origPrice > salePrice) {
-        shopData.products[code].saveAmount = origPrice - salePrice;
+      const save = parsePrice(cols[9]);
+      if (save !== "") {
+        shopData.products[code].saveAmount = save;
+      } else if (orig && sale && orig > sale) {
+        shopData.products[code].saveAmount = orig - sale;
       }
 
-      // 分期(K欄)
-      if (cols[10]) {
-        shopData.products[code].installmentText = cols[10];
-      }
-
+      if (cols[10]) shopData.products[code].installmentText = cols[10];
       count++;
     });
 
-    renderAdmin();
-    alert(`🎉 智能辨識完成！已成功抓取並更新 ${count} 筆商品，請檢視下方卡片並點擊「儲存發布」！`);
+    closeModal();
+    renderLayout();
+    alert(`🎉 已成功匯入並歸類 ${count} 個品項！請點擊右上角「儲存並發布」！`);
     document.getElementById("tsvInput").value = "";
   }
 
   async function saveToGitHub() {
     const token = localStorage.getItem("gh_token");
     shopData.countdownEnd = document.getElementById("countdownEnd").value;
-
-    for (const code of Object.keys(shopData.products)) {
-      const origInput = document.getElementById(`orig_${code}`);
-      const saleInput = document.getElementById(`sale_${code}`);
-      const promoInput = document.getElementById(`promo_${code}`);
-      const specInput = document.getElementById(`spec_${code}`);
-      const giftInput = document.getElementById(`gift_${code}`);
-      const instInput = document.getElementById(`inst_${code}`);
-
-      if (origInput) {
-        const orig = origInput.value === "" ? "" : Number(origInput.value);
-        const sale = saleInput.value === "" ? "" : Number(saleInput.value);
-        shopData.products[code].originalPrice = orig;
-        shopData.products[code].salePrice = sale;
-        shopData.products[code].saveAmount = (orig && sale && orig > sale) ? (orig - sale) : 0;
-        shopData.products[code].promoTitle = promoInput.value;
-        shopData.products[code].spec = specInput.value;
-        shopData.products[code].giftName = giftInput.value;
-        shopData.products[code].installmentText = instInput.value;
-      }
-    }
 
     const fileContent = "window.SHOP_DATA = " + JSON.stringify(shopData, null, 2) + ";";
     const encoded = btoa(unescape(encodeURIComponent(fileContent)));
@@ -282,16 +406,16 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          message: "Update shop-data via Dark Mode Admin",
+          message: "Update shop-data via Master-Detail Admin",
           content: encoded,
           sha: currentFileSha
         })
       });
 
-      if (!res.ok) throw new Error("儲存失敗，請確認網路或金鑰狀態");
+      if (!res.ok) throw new Error("儲存失敗，請檢查網路狀態");
       const data = await res.json();
       currentFileSha = data.content.sha;
-      alert("🎉 儲存發布成功！所有設定已同步寫入 GitHub！");
+      alert("🎉 儲存成功！全站資料庫已同步！");
     } catch (e) {
       alert(e.message);
     }

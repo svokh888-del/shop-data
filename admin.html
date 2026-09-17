@@ -27,7 +27,7 @@
       padding: 10px 20px; display: flex; align-items: center; justify-content: space-between;
       flex-shrink: 0;
     }
-    .header-left, .header-right { display: flex; align-items: center; gap: 14px; }
+    .header-left, .header-right { display: flex; align-items: center; gap: 12px; }
     .title { font-weight: 700; font-size: 15px; color: #fff; }
 
     .btn {
@@ -37,12 +37,13 @@
       cursor: pointer; transition: 0.15s;
     }
     .btn:hover { background: #4b5563; }
+    .btn-sync { background: #2563eb; color: #fff; border: none; }
+    .btn-sync:hover { background: #1d4ed8; }
     .btn-primary { background: var(--primary); color: #022c22; border: none; }
     .btn-primary:hover { background: var(--primary-hover); color: #fff; }
 
     .main-layout { display: flex; flex: 1; overflow: hidden; }
 
-    /* 左側清單 */
     .sidebar {
       width: 250px; background: var(--panel); border-right: 1px solid var(--border);
       display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0;
@@ -60,7 +61,6 @@
     .product-btn.active { background: #1e293b; border-left: 4px solid var(--accent); color: #fff; font-weight: 700; }
     .count-badge { background: #374151; color: #9ca3af; font-size: 11px; padding: 2px 6px; border-radius: 10px; }
 
-    /* 右側工作區 */
     .content-area { flex: 1; padding: 24px; overflow-y: auto; }
     .group-wrapper { max-width: 1300px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
 
@@ -73,7 +73,6 @@
       color: #fff; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
     }
 
-    /* 表格設計 */
     .spec-table { width: 100%; border-collapse: collapse; }
     .spec-table th {
       background: rgba(0,0,0,0.25); text-align: left; padding: 10px 12px;
@@ -85,14 +84,12 @@
     }
     .spec-table tr:last-child td { border-bottom: none; }
 
-    /* 唯讀樣式 */
     .val-pill {
       display: inline-block; padding: 4px 8px; background: rgba(255,255,255,0.05);
       border: 1px solid var(--border); border-radius: 6px; font-weight: 600; font-size: 12px; color: #e5e7eb;
     }
     .val-code { font-family: monospace; color: var(--accent); background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.2); }
 
-    /* 輸入框 */
     .price-input {
       width: 100px; padding: 6px 8px; background: var(--input-bg);
       border: 1px solid var(--accent); border-radius: 6px; color: #38bdf8;
@@ -108,7 +105,6 @@
     .save-tag { color: var(--save); font-weight: 700; }
     .inst-tag { color: var(--inst); font-weight: 600; font-size: 12px; }
 
-    /* 彈窗與遮罩 */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none;
       align-items: center; justify-content: center; z-index: 1000;
@@ -140,7 +136,8 @@
 <header>
   <div class="header-left">
     <div class="title">⚡ 促銷中控台</div>
-    <button class="btn" onclick="openModal()">📋 匯入試算表</button>
+    <button class="btn btn-sync" onclick="fetchFromGoogleSheet()">🔄 一鍵線上同步試算表</button>
+    <button class="btn" onclick="openModal()">📋 手動貼上</button>
     <div style="display: flex; align-items: center; gap: 8px;">
       <span style="font-size: 12px; color: var(--text-muted);">⏰ 倒數截止：</span>
       <input type="datetime-local" id="countdownEnd" style="padding: 4px 8px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 4px; color: #fff; font-size: 12px;">
@@ -160,14 +157,14 @@
 
 <div id="importModal" class="modal-overlay">
   <div class="modal-box">
-    <h3 style="margin-bottom: 8px; font-size: 15px;">貼上 Google 試算表內容</h3>
+    <h3 style="margin-bottom: 8px; font-size: 15px;">手動貼上 Google 試算表</h3>
     <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">
-      請在試算表直接反白複製（從代碼到分期完整複製貼上，含標題無妨）：
+      可作為線上同步的備案，反白試算表複製後貼上：
     </p>
     <textarea id="tsvInput" rows="8" placeholder="在此貼上 (Ctrl+V)..." style="width: 100%; padding: 8px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: #fff; font-size: 12px; outline: none;"></textarea>
     <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
       <button class="btn" onclick="closeModal()">取消</button>
-      <button class="btn btn-primary" onclick="importFromTSV()">自動識別匯入</button>
+      <button class="btn btn-primary" onclick="importFromTSV()">解析匯入</button>
     </div>
   </div>
 </div>
@@ -176,6 +173,8 @@
   const OWNER = "svokh888-del";
   const REPO = "shop-data";
   const PATH = "data.js";
+  const GSHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSEWo8c-SSz0VwsT6ntnoi8ib6fQvByBl7wVnIAQ0C8DaLW6wqiwkdXpYlznFHOiNrFqF6ponss-1rd/pub?gid=0&single=true&output=csv";
+
   let currentFileSha = "";
   let shopData = { countdownEnd: "", products: {} };
   let selectedProductKey = "";
@@ -221,7 +220,6 @@
     }
   }
 
-  // 分期計算 (3000分3期, 6000分6期, 12000分12期，四捨五入)
   function calcInstallment(price) {
     const p = Number(price);
     if (!p || isNaN(p) || p < 3000) return "不能分期";
@@ -231,7 +229,6 @@
     return "不能分期";
   }
 
-  // 整理分類階層：系列 -> 英文 -> 中文品項
   function buildHierarchy() {
     const hierarchy = {};
     for (const [code, item] of Object.entries(shopData.products)) {
@@ -248,7 +245,6 @@
     return hierarchy;
   }
 
-  // 渲染左側 (系列標籤 + 排序後的中文品名按鈕)
   function renderSidebar() {
     const hierarchy = buildHierarchy();
     const sidebar = document.getElementById("sidebar");
@@ -256,14 +252,12 @@
 
     let firstKey = "";
 
-    // 依系列
     Object.keys(hierarchy).sort().forEach(series => {
       const sTitle = document.createElement("div");
       sTitle.className = "series-header";
       sTitle.innerText = `${series} 系列`;
       sidebar.appendChild(sTitle);
 
-      // 依英文排序
       const engKeys = Object.keys(hierarchy[series]).sort();
       engKeys.forEach(eng => {
         const chKeys = Object.keys(hierarchy[series][eng]).sort();
@@ -288,7 +282,6 @@
     });
 
     if (!selectedProductKey) selectedProductKey = firstKey;
-    // 找出當前選中的 codes
     let currentCodes = [];
     for (const s of Object.keys(hierarchy)) {
       for (const e of Object.keys(hierarchy[s])) {
@@ -301,7 +294,6 @@
     renderContent(selectedProductKey, currentCodes);
   }
 
-  // 渲染右側內容
   function renderContent(chName, codes) {
     const container = document.getElementById("groupWrapper");
     container.innerHTML = "";
@@ -318,14 +310,12 @@
       const origDisplay = isOrigPending ? "待補" : `$${Number(origRaw).toLocaleString()}`;
       const saleVal = item.salePrice ?? "";
 
-      // 計算現省
       let saveHtml = "-";
       if (!isOrigPending && saleVal !== "" && saleVal !== "待補") {
         const save = Number(origRaw) - Number(saleVal);
         saveHtml = save > 0 ? `<span class="save-tag">省 $${save.toLocaleString()}</span>` : `$0`;
       }
 
-      // 計算分期
       const instText = calcInstallment(saleVal);
 
       rowsHtml += `
@@ -374,7 +364,6 @@
     container.appendChild(box);
   }
 
-  // 輸入動態聯動
   function handleRowChange(code, origRaw) {
     const saleVal = document.getElementById(`sale_${code}`).value.trim();
     const promoVal = document.getElementById(`promo_${code}`).value.trim();
@@ -384,7 +373,6 @@
     shopData.products[code].promoDiscount = promoVal;
     shopData.products[code].giftReward = giftVal;
 
-    // 現省
     const saveEl = document.getElementById(`save_${code}`);
     if (origRaw !== "待補" && origRaw !== "" && saleVal !== "") {
       const save = Number(origRaw) - Number(saleVal);
@@ -395,34 +383,51 @@
       shopData.products[code].saveAmount = 0;
     }
 
-    // 分期
     const instEl = document.getElementById(`inst_${code}`);
     const instText = calcInstallment(saleVal);
     shopData.products[code].installmentText = instText;
     instEl.innerHTML = `<span class="inst-tag">${instText}</span>`;
   }
 
-  // 精準對齊附圖格式匯入
-  function importFromTSV() {
-    const raw = document.getElementById("tsvInput").value.trim();
-    if (!raw) return alert("請貼上試算表內容！");
-    const rows = raw.split("\n");
+  // 線上自動抓取 Google 試算表 CSV
+  async function fetchFromGoogleSheet() {
+    try {
+      const btn = event.target;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = "⏳ 抓取中...";
+      btn.disabled = true;
+
+      const res = await fetch(GSHEET_CSV_URL);
+      if (!res.ok) throw new Error("無法連線至 Google 試算表");
+      const csvText = await res.text();
+      parseCSVData(csvText, ",");
+
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      alert("🎉 成功同步 Google 試算表最新資料！確認無誤後請點擊右上角「儲存並發布」！");
+    } catch (e) {
+      alert("同步失敗：" + e.message);
+    }
+  }
+
+  function parseCSVData(rawText, delimiter) {
+    const lines = rawText.split(/\r?\n/);
     let count = 0;
 
-    rows.forEach(row => {
-      const cols = row.split("\t").map(c => c.trim().replace(/['"]/g, ''));
+    lines.forEach(line => {
+      const cols = line.split(delimiter).map(c => c.trim().replace(/^["']|["']$/g, ''));
       if (cols[0] === "商品代碼" || !cols[0]) return;
 
-      const code = cols[0]; // A: 商品代碼
+      const code = cols[0];
       if (!shopData.products[code]) shopData.products[code] = {};
 
-      const series = cols[1] || "其他";       // B: 系列
-      const english = cols[2] || "";          // C: 英文
-      const chinese = cols[3] || "";          // D: 中文
-      const unit = cols[4] || "1";            // E: 組
-      const content = cols[5] || "";          // F: 內容
-      const origVal = cols[6] ? cols[6].replace(/,/g, '') : ""; // G: 原價
-      const saleVal = cols[7] ? cols[7].replace(/,/g, '') : ""; // H: 優惠價
+      const series = cols[1] || "其他";
+      const english = cols[2] || "";
+      const chinese = cols[3] || "";
+      const unit = cols[4] || "1";
+      const content = cols[5] || "";
+      const origVal = cols[6] ? cols[6].replace(/,/g, '') : "";
+      const saleVal = cols[7] ? cols[7].replace(/,/g, '') : "";
 
       shopData.products[code].series = series;
       shopData.products[code].english = english;
@@ -441,9 +446,15 @@
       count++;
     });
 
-    closeModal();
     renderSidebar();
-    alert(`🎉 成功匯入 ${count} 筆商品！已依系列與中文品名分類，請點擊右上角「儲存並發布」！`);
+  }
+
+  function importFromTSV() {
+    const raw = document.getElementById("tsvInput").value.trim();
+    if (!raw) return alert("請貼上試算表內容！");
+    parseCSVData(raw, "\t");
+    closeModal();
+    alert("🎉 手動匯入完成！請確認後點擊「儲存並發布」！");
     document.getElementById("tsvInput").value = "";
   }
 
@@ -462,7 +473,7 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          message: "Update shop-data with new hierarchy and promo fields",
+          message: "Update shop-data via Auto Sync Admin",
           content: encoded,
           sha: currentFileSha
         })
@@ -471,7 +482,7 @@
       if (!res.ok) throw new Error("儲存失敗，請檢查網路連線");
       const data = await res.json();
       currentFileSha = data.content.sha;
-      alert("🎉 儲存成功！全站資料庫已同步更新！");
+      alert("🎉 儲存成功！全站資料已同步更新！");
     } catch (e) {
       alert(e.message);
     }

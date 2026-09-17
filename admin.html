@@ -30,7 +30,6 @@
     }
     .header-left, .header-right { display: flex; align-items: center; gap: 14px; }
     .title { font-weight: 700; font-size: 15px; color: #fff; }
-    .status-tag { font-size: 11px; background: rgba(16, 185, 129, 0.15); color: var(--primary); padding: 2px 8px; border-radius: 4px; }
 
     .btn {
       display: inline-flex; align-items: center; gap: 6px;
@@ -41,31 +40,41 @@
     .btn:hover { background: #4b5563; }
     .btn-primary { background: var(--primary); color: #022c22; border: none; }
     .btn-primary:hover { background: var(--primary-hover); color: #fff; }
+    .btn-toggle { background: #1e293b; color: #fbbf24; border: 1px solid #4b5563; width: 100%; justify-content: center; }
 
     .main-layout { display: flex; flex: 1; overflow: hidden; }
 
-    /* 左側大分類清單 */
+    /* 左側清單 */
     .sidebar {
-      width: 260px; background: var(--panel); border-right: 1px solid var(--border);
+      width: 270px; background: var(--panel); border-right: 1px solid var(--border);
       display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0;
     }
-    .series-group { margin-bottom: 8px; border-bottom: 1px solid rgba(55, 65, 81, 0.3); }
+    .sidebar-filter { padding: 10px 14px; border-bottom: 1px solid var(--border); background: #182234; }
+    .series-group { margin-bottom: 8px; border-bottom: 1px solid rgba(55, 65, 81, 0.4); }
     .series-header {
-      padding: 10px 14px 4px 14px; font-size: 11px; font-weight: 700;
+      padding: 8px 14px; font-size: 11px; font-weight: 700;
       letter-spacing: 0.05em; text-transform: uppercase;
     }
-    .product-btn {
-      padding: 10px 14px; cursor: pointer; border-left: 3px solid transparent;
-      display: flex; justify-content: space-between; align-items: center; font-size: 13px;
-      transition: 0.15s; color: #d1d5db;
+    .product-btn-wrapper {
+      display: flex; align-items: center; border-bottom: 1px solid rgba(55, 65, 81, 0.2);
     }
-    .product-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
-    .product-btn.active { background: #1e293b; border-left-color: var(--accent); color: #fff; font-weight: 700; }
+    .product-btn-wrapper:hover { background: rgba(255,255,255,0.04); }
+    .star-btn {
+      padding: 8px 10px; cursor: pointer; font-size: 15px; color: #4b5563;
+      transition: 0.15s; user-select: none;
+    }
+    .star-btn.active { color: var(--star); }
+    .product-btn {
+      flex: 1; padding: 9px 12px 9px 4px; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px; color: #d1d5db; transition: 0.15s;
+    }
+    .product-btn.active { color: #fff; font-weight: 700; }
     .count-badge { background: rgba(0,0,0,0.3); color: #9ca3af; font-size: 11px; padding: 2px 6px; border-radius: 10px; }
 
     /* 右側主工作區 */
     .content-area { flex: 1; padding: 20px; overflow-y: auto; }
-    .group-wrapper { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    .group-wrapper { max-width: 1350px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
 
     .product-box {
       background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
@@ -78,29 +87,28 @@
 
     .spec-table { width: 100%; border-collapse: collapse; }
     .spec-table th {
-      background: rgba(0,0,0,0.25); text-align: left; padding: 10px;
+      background: rgba(0,0,0,0.25); text-align: left; padding: 10px 10px;
       font-size: 12px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border);
     }
     .spec-table td {
-      padding: 10px; border-bottom: 1px solid rgba(55, 65, 81, 0.4);
+      padding: 10px 10px; border-bottom: 1px solid rgba(55, 65, 81, 0.4);
       font-size: 13px; vertical-align: middle;
     }
     .spec-table tr:last-child td { border-bottom: none; }
 
-    /* 唯讀樣式 */
     .val-pill {
       display: inline-block; padding: 4px 8px; background: rgba(255,255,255,0.05);
       border: 1px solid var(--border); border-radius: 6px; font-weight: 600; font-size: 12px; color: #e5e7eb;
     }
     .val-code { font-family: monospace; color: var(--accent); background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.2); }
+    .val-sale { color: #6ee7b7; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); }
 
-    /* 活動價輸入框 (唯一可編輯價格) */
-    .price-promo-input {
+    .price-input {
       width: 110px; padding: 6px 8px; background: var(--input-bg);
       border: 1px solid #f43f5e; border-radius: 6px; color: #fda4af;
       font-size: 13px; font-weight: 700; outline: none; transition: 0.15s;
     }
-    .price-promo-input:focus { box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.3); }
+    .price-input:focus { box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.3); }
 
     .text-input {
       width: 100%; min-width: 120px; padding: 6px 8px; background: var(--input-bg);
@@ -111,7 +119,6 @@
 
     .save-tag { color: var(--save); font-weight: 700; }
     .inst-tag { color: var(--inst); font-weight: 600; font-size: 12px; }
-    .star-check { cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--star); }
 
     #loginMask {
       position: fixed; inset: 0; background: var(--bg); display: flex;
@@ -124,7 +131,7 @@
 
 <div id="loginMask">
   <div class="login-box">
-    <h3 style="margin-bottom: 12px; font-size: 16px;">中控台金鑰驗證</h3>
+    <h3 style="margin-bottom: 12px; font-size: 16px;">後台金鑰驗證</h3>
     <div style="margin-bottom: 14px;">
       <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">GitHub Token：</label>
       <input type="text" id="tokenInput" placeholder="ghp_..." style="width: 100%; padding: 8px 10px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: #fff;">
@@ -136,9 +143,9 @@
 <header>
   <div class="header-left">
     <div class="title">⚡ 促銷中控台</div>
-    <span class="status-tag" id="syncStatus">🔄 雲端試算表自動同步中...</span>
+    <span style="font-size: 12px; color: #10b981; background: rgba(16,185,129,0.1); padding: 4px 8px; border-radius: 4px;">● 雲端試算表自動聯網中</span>
     <div style="display: flex; align-items: center; gap: 8px;">
-      <span style="font-size: 12px; color: var(--text-muted);">⏰ 倒數截止：</span>
+      <span style="font-size: 12px; color: var(--text-muted);">⏰ 活動倒數截止：</span>
       <input type="datetime-local" id="countdownEnd" style="padding: 4px 8px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 4px; color: #fff; font-size: 12px;">
     </div>
   </div>
@@ -148,7 +155,15 @@
 </header>
 
 <div class="main-layout">
-  <div class="sidebar" id="sidebar"></div>
+  <div class="sidebar">
+    <div class="sidebar-filter">
+      <button class="btn btn-toggle" id="filterBtn" onclick="toggleHeroFilter()">
+        ⭐ 切換：僅看主力熱賣商品
+      </button>
+    </div>
+    <div id="seriesList" style="flex: 1; overflow-y: auto;"></div>
+  </div>
+
   <div class="content-area">
     <div id="groupWrapper" class="group-wrapper"></div>
   </div>
@@ -162,16 +177,17 @@
 
   let currentFileSha = "";
   let shopData = { countdownEnd: "", heroProducts: {}, products: {} };
+  if (!shopData.heroProducts) shopData.heroProducts = {};
   let selectedProductKey = "";
+  let onlyHeroMode = false;
 
   const SERIES_COLORS = {
-    "🔥 主力熱銷專區": { bg: "rgba(251, 191, 36, 0.08)", border: "#fbbf24", text: "#fcd34d" },
-    "AEMIS": { bg: "rgba(16, 185, 129, 0.08)", border: "#10b981", text: "#6ee7b7" },
-    "B": { bg: "rgba(56, 189, 248, 0.08)", border: "#38bdf8", text: "#7dd3fc" },
-    "FEMOIRE": { bg: "rgba(236, 72, 153, 0.08)", border: "#ec4899", text: "#f472b6" },
-    "Zenso": { bg: "rgba(245, 158, 11, 0.08)", border: "#f59e0b", text: "#fcd34d" },
-    "MOVEON": { bg: "rgba(168, 85, 247, 0.08)", border: "#a855f7", text: "#c084fc" },
-    "預設": { bg: "rgba(100, 116, 139, 0.08)", border: "#64748b", text: "#cbd5e1" }
+    "AEMIS": { bg: "rgba(16, 185, 129, 0.1)", border: "#10b981", text: "#6ee7b7" },
+    "B": { bg: "rgba(56, 189, 248, 0.1)", border: "#38bdf8", text: "#7dd3fc" },
+    "FEMOIRE": { bg: "rgba(236, 72, 153, 0.1)", border: "#ec4899", text: "#f472b6" },
+    "Zenso": { bg: "rgba(245, 158, 11, 0.1)", border: "#f59e0b", text: "#fcd34d" },
+    "MOVEON": { bg: "rgba(168, 85, 247, 0.1)", border: "#a855f7", text: "#c084fc" },
+    "預設": { bg: "rgba(100, 116, 139, 0.1)", border: "#64748b", text: "#cbd5e1" }
   };
 
   function getSeriesStyle(series) {
@@ -212,11 +228,24 @@
       document.getElementById("loginMask").style.display = "none";
       document.getElementById("countdownEnd").value = shopData.countdownEnd || "";
       
-      // 自動背景靜默同步試算表
-      await autoSyncGoogleSheet();
+      // 自動連網讀取 Google 試算表最新數據
+      await fetchGoogleSheetCSVAuto();
+      renderSidebar();
     } catch (e) {
       alert(e.message);
     }
+  }
+
+  function toggleHeroFilter() {
+    onlyHeroMode = !onlyHeroMode;
+    document.getElementById("filterBtn").innerText = onlyHeroMode ? "📋 顯示全部系列" : "⭐ 切換：僅看主力熱賣商品";
+    renderSidebar();
+  }
+
+  function toggleHeroProduct(chName, event) {
+    event.stopPropagation();
+    shopData.heroProducts[chName] = !shopData.heroProducts[chName];
+    renderSidebar();
   }
 
   function calcInstallment(price) {
@@ -247,10 +276,10 @@
   }
 
   // 自動同步試算表
-  async function autoSyncGoogleSheet() {
+  async function fetchGoogleSheetCSVAuto() {
     try {
       const res = await fetch(GSHEET_CSV_URL + "&t=" + new Date().getTime());
-      if (!res.ok) throw new Error("Google 試算表連線失敗");
+      if (!res.ok) return;
       const text = await res.text();
       const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
       if (lines.length === 0) return;
@@ -290,113 +319,84 @@
         shopData.products[code].unitCount = unit || "1";
         shopData.products[code].spec = content ? `${content} (${unit}組)` : `${unit}組`;
         shopData.products[code].originalPrice = orig;
-        shopData.products[code].regularSalePrice = sale; // 唯讀優惠價
-        if (!shopData.products[code].promoSalePrice) shopData.products[code].promoSalePrice = "";
+        shopData.products[code].regularSalePrice = sale; // 固定的優惠價
       }
-
-      document.getElementById("syncStatus").innerText = "✅ 試算表已自動同步";
-      renderSidebar();
-    } catch (err) {
-      document.getElementById("syncStatus").innerText = "⚠️ 試算表讀取異常";
+    } catch (e) {
+      console.warn("自動同步失敗", e);
     }
   }
 
-  function toggleMainHero(chName) {
-    shopData.heroProducts[chName] = !shopData.heroProducts[chName];
-    renderSidebar();
-  }
-
   function renderSidebar() {
-    const list = document.getElementById("sidebar");
+    const list = document.getElementById("seriesList");
     list.innerHTML = "";
 
-    const heroGroup = [];
-    const normalHierarchy = {};
-
+    const hierarchy = {};
     for (const [code, item] of Object.entries(shopData.products)) {
-      const series = item.series || "其他系列";
       const chName = item.chineseName || code;
+      const isHero = !!shopData.heroProducts[chName];
 
-      if (!normalHierarchy[series]) normalHierarchy[series] = {};
-      if (!normalHierarchy[series][chName]) normalHierarchy[series][chName] = [];
-      normalHierarchy[series][chName].push(code);
+      if (onlyHeroMode && !isHero) continue;
 
-      if (shopData.heroProducts[chName] && !heroGroup.includes(chName)) {
-        heroGroup.push(chName);
-      }
+      const series = item.series || "其他系列";
+      if (!hierarchy[series]) hierarchy[series] = {};
+      if (!hierarchy[series][chName]) hierarchy[series][chName] = [];
+      hierarchy[series][chName].push(code);
     }
 
     let firstKey = "";
 
-    // 1. 置頂：主力熱銷專區
-    if (heroGroup.length > 0) {
-      const heroStyle = getSeriesStyle("🔥 主力熱銷專區");
-      const groupDiv = document.createElement("div");
-      groupDiv.className = "series-group";
-      groupDiv.style.backgroundColor = heroStyle.bg;
-
-      const header = document.createElement("div");
-      header.className = "series-header";
-      header.style.color = heroStyle.text;
-      header.innerText = "🔥 主力熱銷專區";
-      groupDiv.appendChild(header);
-
-      heroGroup.forEach(chName => {
-        if (!firstKey) firstKey = chName;
-        // 抓取該品項所有 codes
-        let codes = [];
-        for (const s of Object.keys(normalHierarchy)) {
-          if (normalHierarchy[s][chName]) { codes = normalHierarchy[s][chName]; break; }
-        }
-
-        const btn = document.createElement("div");
-        btn.className = `product-btn ${chName === (selectedProductKey || firstKey) ? 'active' : ''}`;
-        btn.innerHTML = `<span>⭐ ${chName}</span><span class="count-badge">${codes.length}組</span>`;
-        btn.onclick = () => {
-          selectedProductKey = chName;
-          renderSidebar();
-          renderContent(chName, codes);
-        };
-        groupDiv.appendChild(btn);
-      });
-      list.appendChild(groupDiv);
-    }
-
-    // 2. 一般系列大分類
-    Object.keys(normalHierarchy).sort().forEach(series => {
+    Object.keys(hierarchy).sort().forEach(series => {
       const style = getSeriesStyle(series);
-      const groupDiv = document.createElement("div");
-      groupDiv.className = "series-group";
-      groupDiv.style.backgroundColor = style.bg;
+      const group = document.createElement("div");
+      group.className = "series-group";
+      group.style.backgroundColor = style.bg;
 
       const header = document.createElement("div");
       header.className = "series-header";
       header.style.color = style.text;
-      header.innerText = `${series} 系列`;
-      groupDiv.appendChild(header);
+      header.innerHTML = `<span>${series} 系列</span>`;
+      group.appendChild(header);
 
-      Object.keys(normalHierarchy[series]).sort().forEach(chName => {
-        const codes = normalHierarchy[series][chName];
+      Object.keys(hierarchy[series]).sort().forEach(chName => {
+        const codes = hierarchy[series][chName];
         if (!firstKey) firstKey = chName;
+
+        const isHero = !!shopData.heroProducts[chName];
+
+        const itemWrap = document.createElement("div");
+        itemWrap.className = "product-btn-wrapper";
+
+        const star = document.createElement("span");
+        star.className = `star-btn ${isHero ? 'active' : ''}`;
+        star.innerHTML = "⭐";
+        star.title = "點擊設為主力商品";
+        star.onclick = (e) => toggleHeroProduct(chName, e);
 
         const btn = document.createElement("div");
         btn.className = `product-btn ${chName === (selectedProductKey || firstKey) ? 'active' : ''}`;
-        btn.innerHTML = `<span>${chName}</span><span class="count-badge">${codes.length}組</span>`;
+        btn.innerHTML = `
+          <span>${chName}</span>
+          <span class="count-badge">${codes.length}組</span>
+        `;
         btn.onclick = () => {
           selectedProductKey = chName;
           renderSidebar();
           renderContent(chName, codes);
         };
-        groupDiv.appendChild(btn);
+
+        itemWrap.appendChild(star);
+        itemWrap.appendChild(btn);
+        group.appendChild(itemWrap);
       });
-      list.appendChild(groupDiv);
+
+      list.appendChild(group);
     });
 
     if (!selectedProductKey) selectedProductKey = firstKey;
     let activeCodes = [];
-    for (const s of Object.keys(normalHierarchy)) {
-      if (normalHierarchy[s][selectedProductKey]) {
-        activeCodes = normalHierarchy[s][selectedProductKey];
+    for (const s of Object.keys(hierarchy)) {
+      if (hierarchy[s][selectedProductKey]) {
+        activeCodes = hierarchy[s][selectedProductKey];
         break;
       }
     }
@@ -408,7 +408,6 @@
     container.innerHTML = "";
     if (!codes || codes.length === 0) return;
 
-    const isHero = !!shopData.heroProducts[chName];
     const box = document.createElement("div");
     box.className = "product-box";
 
@@ -419,37 +418,38 @@
       const isOrigPending = (origRaw === "待補" || origRaw === "" || origRaw === undefined);
       const origDisplay = isOrigPending ? "待補" : `$${Number(origRaw).toLocaleString()}`;
       
-      const regSale = item.regularSalePrice ?? item.salePrice ?? "";
-      const regDisplay = (regSale === "待補" || regSale === "") ? "-" : `$${Number(regSale).toLocaleString()}`;
+      const regSale = item.regularSalePrice ?? "";
+      const regSaleDisplay = (regSale === "" || regSale === "待補") ? "待補" : `$${Number(regSale).toLocaleString()}`;
 
-      const promoSale = item.promoSalePrice || "";
-      const currentActivePrice = promoSale !== "" ? promoSale : regSale;
+      // 活動特價若無輸入則為空
+      const promoSale = item.promoSalePrice ?? "";
+      const effectivePrice = promoSale !== "" ? promoSale : regSale;
 
       let saveHtml = "-";
-      if (!isOrigPending && currentActivePrice !== "" && currentActivePrice !== "待補") {
-        const save = Number(origRaw) - Number(currentActivePrice);
+      if (!isOrigPending && effectivePrice !== "" && effectivePrice !== "待補") {
+        const save = Number(origRaw) - Number(effectivePrice);
         saveHtml = save > 0 ? `<span class="save-tag">省 $${save.toLocaleString()}</span>` : `$0`;
       }
 
-      const instText = calcInstallment(currentActivePrice);
+      const instText = calcInstallment(effectivePrice);
 
       rowsHtml += `
         <tr>
           <td><span class="val-pill val-code">${code}</span></td>
           <td><span class="val-pill">${item.unitCount || '1'} 組</span></td>
           <td><span class="val-pill">${origDisplay}</span></td>
-          <td><span class="val-pill" style="color: #38bdf8;">${regDisplay}</span></td>
+          <td><span class="val-pill val-sale">${regSaleDisplay}</span></td>
           <td>
-            <input type="text" class="price-promo-input" id="promo_${code}" value="${promoSale}" placeholder="留空跑優惠價" oninput="handleRowChange('${code}', '${origRaw}', '${regSale}')">
+            <input type="text" class="price-input" id="promo_${code}" value="${promoSale}" placeholder="空白=照優惠價" oninput="handleRowChange('${code}', '${origRaw}', '${regSale}')">
           </td>
           <td><span class="val-pill">${item.spec || '-'}</span></td>
           <td id="save_${code}">${saveHtml}</td>
           <td id="inst_${code}"><span class="inst-tag">${instText}</span></td>
           <td>
-            <input type="text" class="text-input" id="discount_${code}" value="${item.promoDiscount || ''}" placeholder="例: 滿2盒送隨身包" oninput="handleRowChange('${code}', '${origRaw}', '${regSale}')">
+            <input type="text" class="text-input" id="discount_${code}" value="${item.promoDiscount || ''}" placeholder="例: 滿2盒9折 / 買二送一" oninput="handleRowChange('${code}', '${origRaw}', '${regSale}')">
           </td>
           <td>
-            <input type="text" class="text-input" id="gift_${code}" value="${item.giftReward || ''}" placeholder="例: 保溫瓶" oninput="handleRowChange('${code}', '${origRaw}', '${regSale}')">
+            <input type="text" class="text-input" id="gift_${code}" value="${item.giftReward || ''}" placeholder="例: 贈隨身瓶" oninput="handleRowChange('${code}', '${origRaw}', '${regSale}')">
           </td>
         </tr>
       `;
@@ -458,24 +458,21 @@
     box.innerHTML = `
       <div class="product-box-title">
         <span>📦 ${chName}</span>
-        <label class="star-check">
-          <input type="checkbox" ${isHero ? 'checked' : ''} onchange="toggleMainHero('${chName}')">
-          <span>設為主力商品（置頂大分類）</span>
-        </label>
+        <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">共 ${codes.length} 個規格項目</span>
       </div>
       <table class="spec-table">
         <thead>
           <tr>
             <th style="width: 75px;">代碼</th>
-            <th style="width: 65px;">組數 (唯讀)</th>
+            <th style="width: 65px;">組數</th>
             <th style="width: 90px;">原價 (唯讀)</th>
-            <th style="width: 100px;">常態優惠 (唯讀)</th>
-            <th style="width: 120px;">🔥 活動專屬價</th>
+            <th style="width: 100px;">優惠價 (唯讀)</th>
+            <th style="width: 130px;">🔥 快閃活動特價</th>
             <th style="width: 110px;">規格內容</th>
-            <th style="width: 90px;">現省多少</th>
-            <th style="width: 130px;">分期付款</th>
-            <th style="width: 140px;">活動折扣標語</th>
-            <th style="width: 130px;">滿額贈禮</th>
+            <th style="width: 95px;">現省多少</th>
+            <th style="width: 140px;">分期付款</th>
+            <th style="width: 140px;">活動折扣設定</th>
+            <th style="width: 150px;">滿額贈禮</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>
@@ -490,7 +487,6 @@
     const gift = document.getElementById(`gift_${code}`).value.trim();
 
     shopData.products[code].promoSalePrice = promoSale;
-    shopData.products[code].salePrice = promoSale !== "" ? promoSale : regSale;
     shopData.products[code].promoDiscount = discount;
     shopData.products[code].giftReward = gift;
 
@@ -527,16 +523,16 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          message: "Update shop-data with Auto-Sync & Hero Top Category",
+          message: "Update shop-data: Auto Sheet Sync with Hero Category Stars",
           content: encoded,
           sha: currentFileSha
         })
       });
 
-      if (!res.ok) throw new Error("儲存失敗，請檢查網路連線");
+      if (!res.ok) throw new Error("儲存失敗，請檢查網路狀態");
       const data = await res.json();
       currentFileSha = data.content.sha;
-      alert("🎉 儲存成功！全站商品資料庫已同步發布！");
+      alert("🎉 儲存成功！全站資料庫已同步更新！");
     } catch (e) {
       alert(e.message);
     }

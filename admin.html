@@ -49,7 +49,7 @@
       display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0;
     }
     .series-header {
-      padding: 12px 16px 4px 16px; font-size: 11px; font-weight: 700;
+      padding: 10px 16px 4px 16px; font-size: 11px; font-weight: 700;
       color: var(--accent); letter-spacing: 0.05em; text-transform: uppercase;
     }
     .product-btn {
@@ -159,7 +159,7 @@
   <div class="modal-box">
     <h3 style="margin-bottom: 8px; font-size: 15px;">手動貼上 Google 試算表</h3>
     <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">
-      反白試算表複製後貼上：
+      可作為線上同步的備案，反白試算表複製後貼上：
     </p>
     <textarea id="tsvInput" rows="8" placeholder="在此貼上 (Ctrl+V)..." style="width: 100%; padding: 8px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: #fff; font-size: 12px; outline: none;"></textarea>
     <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
@@ -389,45 +389,7 @@
     instEl.innerHTML = `<span class="inst-tag">${instText}</span>`;
   }
 
-  // 標準 CSV 解析器：能夠正確處理雙引號包夾的千分位 "1,980"
-  function parseStandardCSV(text) {
-    const rows = [];
-    let row = [];
-    let cur = "";
-    let inQuotes = false;
-
-    for (let i = 0; i < text.length; i++) {
-      const c = text[i];
-      const next = text[i + 1];
-
-      if (c === '"') {
-        if (inQuotes && next === '"') {
-          cur += '"';
-          i++;
-        } else {
-          inQuotes = !inQuotes;
-        }
-      } else if (c === ',' && !inQuotes) {
-        row.push(cur.trim());
-        cur = "";
-      } else if ((c === '\r' || c === '\n') && !inQuotes) {
-        if (c === '\r' && next === '\n') i++;
-        row.push(cur.trim());
-        if (row.length > 1 || row[0] !== "") rows.push(row);
-        row = [];
-        cur = "";
-      } else {
-        cur += c;
-      }
-    }
-    if (cur || row.length > 0) {
-      row.push(cur.trim());
-      rows.push(row);
-    }
-    return rows;
-  }
-
-  // 線上同步
+  // 線上自動抓取 Google 試算表 CSV
   async function fetchFromGoogleSheet() {
     try {
       const btn = event.target;
@@ -438,22 +400,23 @@
       const res = await fetch(GSHEET_CSV_URL);
       if (!res.ok) throw new Error("無法連線至 Google 試算表");
       const csvText = await res.text();
-      
-      const rows = parseStandardCSV(csvText);
-      processParsedRows(rows);
+      parseCSVData(csvText, ",");
 
       btn.innerHTML = originalText;
       btn.disabled = false;
-      alert("🎉 成功同步！千分位價格已完美對齊！請檢查後點擊「儲存並發布」！");
+      alert("🎉 成功同步 Google 試算表最新資料！確認無誤後請點擊右上角「儲存並發布」！");
     } catch (e) {
       alert("同步失敗：" + e.message);
     }
   }
 
-  function processParsedRows(rows) {
+  function parseCSVData(rawText, delimiter) {
+    const lines = rawText.split(/\r?\n/);
     let count = 0;
-    rows.forEach(cols => {
-      if (!cols[0] || cols[0] === "商品代碼") return;
+
+    lines.forEach(line => {
+      const cols = line.split(delimiter).map(c => c.trim().replace(/^["']|["']$/g, ''));
+      if (cols[0] === "商品代碼" || !cols[0]) return;
 
       const code = cols[0];
       if (!shopData.products[code]) shopData.products[code] = {};
@@ -486,12 +449,10 @@
     renderSidebar();
   }
 
-  // 手動貼上解析
   function importFromTSV() {
     const raw = document.getElementById("tsvInput").value.trim();
     if (!raw) return alert("請貼上試算表內容！");
-    const rows = raw.split("\n").map(line => line.split("\t").map(c => c.trim().replace(/^["']|["']$/g, '')));
-    processParsedRows(rows);
+    parseCSVData(raw, "\t");
     closeModal();
     alert("🎉 手動匯入完成！請確認後點擊「儲存並發布」！");
     document.getElementById("tsvInput").value = "";
@@ -512,7 +473,7 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          message: "Fix CSV parsing for comma separated prices",
+          message: "Update shop-data via Auto Sync Admin",
           content: encoded,
           sha: currentFileSha
         })

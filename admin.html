@@ -6,21 +6,21 @@
   <title>電商商品與促銷中控台</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --panel-bg: #1e293b;
-      --card-bg: #283347;
+      --bg: #0b0f17;
+      --panel-bg: #151d2a;
+      --card-bg: #1e293b;
       --primary: #10b981;
       --primary-hover: #059669;
       --accent: #38bdf8;
-      --border: #334155;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --save-color: #f59e0b;
+      --border: #2d3748;
+      --text: #f1f5f9;
+      --text-muted: #8492a6;
+      --save-color: #fbbf24;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-    /* 頂部置頂工具列 */
+    /* 置頂工具列 */
     header {
       background: var(--panel-bg);
       border-bottom: 1px solid var(--border);
@@ -36,20 +36,20 @@
 
     .btn {
       display: inline-flex; align-items: center; gap: 6px;
-      background: #334155; color: #fff; border: 1px solid var(--border);
+      background: #243042; color: #fff; border: 1px solid var(--border);
       padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600;
       cursor: pointer; transition: 0.15s; white-space: nowrap;
     }
-    .btn:hover { background: #475569; }
+    .btn:hover { background: #334155; }
     .btn-primary { background: var(--primary); color: #022c22; border: none; }
     .btn-primary:hover { background: var(--primary-hover); color: #fff; }
 
-    /* 雙欄主架構 */
+    /* 雙欄版面 */
     .main-layout { display: flex; flex: 1; overflow: hidden; }
 
     /* 左側大分類清單 */
     .sidebar {
-      width: 260px;
+      width: 250px;
       background: var(--panel-bg);
       border-right: 1px solid var(--border);
       display: flex;
@@ -68,7 +68,7 @@
     .category-item {
       padding: 12px 16px;
       cursor: pointer;
-      border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+      border-bottom: 1px solid rgba(45, 55, 72, 0.4);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -76,116 +76,93 @@
       font-weight: 500;
       transition: 0.15s;
     }
-    .category-item:hover { background: rgba(255,255,255,0.04); }
-    .category-item.active { background: #24344d; border-left: 4px solid var(--accent); color: #fff; font-weight: 700; }
-    .badge { background: #334155; color: #94a3b8; font-size: 11px; padding: 2px 6px; border-radius: 10px; }
+    .category-item:hover { background: rgba(255,255,255,0.03); }
+    .category-item.active { background: #1a2638; border-left: 4px solid var(--accent); color: #fff; font-weight: 700; }
+    .badge { background: #243042; color: #94a3b8; font-size: 11px; padding: 2px 6px; border-radius: 10px; }
 
-    /* 右側條狀列表 */
+    /* 右側工作區 */
     .content-area {
       flex: 1;
-      padding: 20px;
+      padding: 20px 24px;
       overflow-y: auto;
       background: var(--bg);
     }
-    .strip-list {
+    .top-product-header {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
       display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-width: 1200px;
-      margin: 0 auto;
+      justify-content: space-between;
+      align-items: flex-end;
     }
+    .top-product-title { font-size: 20px; font-weight: 700; color: #fff; }
+    .top-product-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+    /* 橫排長條樣式 */
+    .strip-list { display: flex; flex-direction: column; gap: 10px; }
     .strip-card {
       background: var(--panel-bg);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 12px 16px;
+      padding: 12px 18px;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      align-items: center;
+      gap: 16px;
       transition: border-color 0.15s;
     }
-    .strip-card:hover { border-color: #475569; }
+    .strip-card:hover { border-color: #4a5568; }
 
-    /* 上方標題列 */
-    .card-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .product-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #fff;
-    }
-    .code-tag {
-      background: rgba(56, 189, 248, 0.12);
-      color: var(--accent);
-      font-family: monospace;
-      font-size: 12px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      border: 1px solid rgba(56, 189, 248, 0.2);
-    }
-
-    /* 下方橫排數值列：組數 / 原價 / 優惠特價 / 規格組數 / 現省 */
-    .card-bottom {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .col-cell {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .col-cell label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-    .col-cell input {
-      background: #0f172a;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: #fff;
-      padding: 6px 10px;
-      font-size: 13px;
-      outline: none;
-      transition: 0.15s;
-    }
-    .col-cell input:focus { border-color: var(--accent); }
-
-    /* 自動計算現省展示框 */
-    .save-box {
-      min-width: 100px;
+    .cell { display: flex; flex-direction: column; gap: 4px; }
+    .cell-label { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+    .cell-text {
       height: 32px;
       display: flex;
       align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #e2e8f0;
+      background: rgba(255,255,255,0.03);
+      padding: 0 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .cell input {
+      background: #090d14;
+      border: 1px solid #3b4758;
+      border-radius: 6px;
+      color: #fff;
+      padding: 6px 10px;
+      font-size: 14px;
+      font-weight: 700;
+      outline: none;
+      transition: 0.15s;
+    }
+    .cell input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+
+    /* 現省標籤 */
+    .save-badge {
+      height: 32px;
+      min-width: 100px;
+      display: flex;
+      align-items: center;
       justify-content: center;
-      background: rgba(245, 158, 11, 0.1);
-      border: 1px solid rgba(245, 158, 11, 0.3);
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.3);
       border-radius: 6px;
       color: var(--save-color);
       font-weight: 700;
       font-size: 13px;
     }
 
-    /* 彈窗 & 登入層 */
+    /* 彈窗與遮罩 */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none;
       align-items: center; justify-content: center; z-index: 1000;
     }
-    .modal-box {
-      background: var(--panel-bg); width: 90%; max-width: 540px; border-radius: 10px;
-      padding: 20px; border: 1px solid var(--border);
-    }
+    .modal-box { background: var(--panel-bg); width: 90%; max-width: 550px; border-radius: 10px; padding: 22px; border: 1px solid var(--border); }
     .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; }
-    #loginMask {
-      position: fixed; inset: 0; background: var(--bg); display: flex;
-      align-items: center; justify-content: center; z-index: 2000;
-    }
-    .login-box { background: var(--panel-bg); padding: 28px; border-radius: 10px; width: 380px; border: 1px solid var(--border); }
+    #loginMask { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+    .login-box { background: var(--panel-bg); padding: 30px; border-radius: 10px; width: 380px; border: 1px solid var(--border); }
   </style>
 </head>
 <body>
@@ -196,20 +173,20 @@
     <h3 style="margin-bottom: 12px; font-size: 16px;">後台金鑰驗證</h3>
     <div style="margin-bottom: 12px;">
       <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">GitHub Personal Access Token：</label>
-      <input type="text" id="tokenInput" placeholder="ghp_..." style="width: 100%; padding: 8px 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: #fff;">
+      <input type="text" id="tokenInput" placeholder="ghp_..." style="width: 100%; padding: 8px 10px; background: #090d14; border: 1px solid var(--border); border-radius: 6px; color: #fff;">
     </div>
     <button class="btn btn-primary" style="width: 100%;" onclick="login()">驗證解鎖</button>
   </div>
 </div>
 
-<!-- 頂部置頂工具列 -->
+<!-- 置頂工具列 -->
 <header>
   <div class="header-left">
     <div class="title">⚡ 促銷中控台</div>
     <button class="btn" onclick="openModal()">📋 匯入試算表</button>
     <div style="display: flex; align-items: center; gap: 8px;">
-      <span style="font-size: 12px; color: var(--text-muted);">⏰ 促銷倒數截止：</span>
-      <input type="datetime-local" id="countdownEnd" style="width: 190px; padding: 4px 8px; background: #0f172a; border: 1px solid var(--border); border-radius: 4px; color: #fff; font-size: 12px;">
+      <span style="font-size: 12px; color: var(--text-muted);">⏰ 倒數截止：</span>
+      <input type="datetime-local" id="countdownEnd" style="width: 185px; padding: 4px 8px; background: #090d14; border: 1px solid var(--border); border-radius: 4px; color: #fff; font-size: 12px;">
     </div>
   </div>
   <div class="header-right">
@@ -217,31 +194,37 @@
   </div>
 </header>
 
-<!-- 主工作雙欄 -->
+<!-- 雙欄主工作區 -->
 <div class="main-layout">
-  <!-- 左欄：大分類 (依商品代碼系列) -->
+  <!-- 左欄：大分類 -->
   <div class="sidebar">
-    <div class="sidebar-title">系列大分類</div>
+    <div class="sidebar-title">商品分類列表</div>
     <div id="categoryList"></div>
   </div>
 
-  <!-- 右欄：長方形條狀子項目 -->
+  <!-- 右欄：子項目條狀工作台 -->
   <div class="content-area">
+    <div class="top-product-header">
+      <div>
+        <div class="top-product-title" id="topTitle">請選擇左側商品</div>
+        <div class="top-product-sub" id="topSubTitle"></div>
+      </div>
+    </div>
     <div id="stripContainer" class="strip-list"></div>
   </div>
 </div>
 
-<!-- 匯入試算表彈窗 -->
+<!-- 匯入彈窗 -->
 <div id="importModal" class="modal-overlay">
   <div class="modal-box">
     <h3 style="margin-bottom: 8px; font-size: 15px;">貼上 Google 試算表</h3>
     <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">
-      在試算表框選複製商品內容（含代碼、品名、原價、優惠價），直接貼上即可自動對齊：
+      框選複製包含「商品代碼、系列、英文、中文、組、內容、原價、優惠價」的表格，貼上即可覆蓋更新：
     </p>
-    <textarea id="tsvInput" rows="7" placeholder="在此貼上 (Ctrl+V)..." style="width: 100%; padding: 8px; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: #fff; font-size: 12px; outline: none;"></textarea>
+    <textarea id="tsvInput" rows="8" placeholder="在此貼上 (Ctrl+V)..." style="width: 100%; padding: 8px; background: #090d14; border: 1px solid var(--border); border-radius: 6px; color: #fff; font-size: 12px; outline: none;"></textarea>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal()">取消</button>
-      <button class="btn btn-primary" onclick="importFromTSV()">自動識別並匯入</button>
+      <button class="btn btn-primary" onclick="importFromTSV()">自動識別並覆蓋舊資料</button>
     </div>
   </div>
 </div>
@@ -295,24 +278,17 @@
     }
   }
 
-  // 取得大分類邏輯：依代碼前綴 (sp, sps, bg, bl) + 系列中文
-  function getCategoryKey(code, item) {
-    const prefix = code.split("-")[0].replace(/\d+/g, "");
-    let seriesName = "";
-    if (item.series) {
-      seriesName = item.series;
-    } else if (item.name) {
-      seriesName = item.name.split(" ")[0] || prefix;
-    } else {
-      seriesName = prefix.toUpperCase();
-    }
-    return `${prefix.toUpperCase()} 系列 (${seriesName})`;
+  // 純淨分類邏輯：只依據中文品名 + 系列
+  function getCategoryName(item) {
+    if (item.cleanCategory) return item.cleanCategory;
+    if (item.chName) return `【${item.series || '其他'}】${item.chName}`;
+    return "未分類商品";
   }
 
   function renderLayout() {
     const categories = {};
     for (const [code, item] of Object.entries(shopData.products)) {
-      const cat = getCategoryKey(code, item);
+      const cat = getCategoryName(item);
       if (!categories[cat]) categories[cat] = [];
       categories[cat].push(code);
     }
@@ -339,126 +315,163 @@
       catList.appendChild(div);
     });
 
-    renderStripItems(categories[selectedCategory] || []);
+    const activeCodes = categories[selectedCategory] || [];
+    renderDetailArea(activeCodes);
   }
 
-  // 渲染右側長條項目
-  function renderStripItems(codes) {
+  function renderDetailArea(codes) {
     const container = document.getElementById("stripContainer");
     container.innerHTML = "";
 
+    if (codes.length === 0) {
+      document.getElementById("topTitle").innerText = "尚無商品";
+      document.getElementById("topSubTitle").innerText = "";
+      return;
+    }
+
+    const firstItem = shopData.products[codes[0]];
+    document.getElementById("topTitle").innerText = `${firstItem.engName || ''} ${firstItem.chName || ''}`.trim() || selectedCategory;
+    document.getElementById("topSubTitle").innerText = `系列：${firstItem.series || '預設'} ｜ 共 ${codes.length} 種組合規格`;
+
     codes.forEach(code => {
       const item = shopData.products[code];
-      const orig = Number(item.originalPrice) || 0;
-      const sale = Number(item.salePrice) || 0;
-      const save = (orig && sale && orig > sale) ? (orig - sale) : 0;
+      const origVal = item.originalPrice;
+      const isPending = (origVal === "待補" || origVal === "" || isNaN(Number(origVal)));
+      
+      const origNum = isPending ? null : Number(origVal);
+      const saleNum = Number(item.salePrice) || 0;
+      
+      let saveText = "-";
+      if (!isPending && origNum !== null && origNum > saleNum) {
+        saveText = `省 $${(origNum - saleNum).toLocaleString()}`;
+      } else if (!isPending && origNum !== null) {
+        saveText = "省 $0";
+      }
 
       const div = document.createElement("div");
       div.className = "strip-card";
       div.innerHTML = `
-        <div class="card-top">
-          <span class="product-title">${item.name || code}</span>
-          <span class="code-tag">${code}</span>
+        <!-- 組數 (固定不動) -->
+        <div class="cell" style="width: 70px;">
+          <span class="cell-label">組數</span>
+          <div class="cell-text" style="justify-content: center;">${item.unitCount || '1'} 組</div>
         </div>
 
-        <div class="card-bottom">
-          <div class="col-cell" style="width: 75px;">
-            <label>組數</label>
-            <input type="text" id="unit_${code}" value="${item.unitCount || '1'}" oninput="syncField('${code}')">
+        <!-- 原價 (固定不動) -->
+        <div class="cell" style="width: 110px;">
+          <span class="cell-label">原價</span>
+          <div class="cell-text" id="orig_display_${code}">
+            ${isPending ? '待補' : '$' + Number(origVal).toLocaleString()}
           </div>
+        </div>
 
-          <div class="col-cell" style="width: 100px;">
-            <label>原價</label>
-            <input type="text" id="orig_${code}" value="${item.originalPrice ?? ''}" oninput="syncField('${code}')">
-          </div>
+        <!-- 優惠特價 (唯一修改欄位) -->
+        <div class="cell" style="width: 120px;">
+          <span class="cell-label" style="color: var(--accent);">優惠特價 ✎</span>
+          <input type="text" id="sale_${code}" value="${item.salePrice ?? ''}" oninput="syncSalePrice('${code}')">
+        </div>
 
-          <div class="col-cell" style="width: 100px;">
-            <label>優惠特價</label>
-            <input type="text" id="sale_${code}" value="${item.salePrice ?? ''}" oninput="syncField('${code}')">
-          </div>
+        <!-- 規格內容 (固定不動) -->
+        <div class="cell" style="flex: 1; min-width: 120px;">
+          <span class="cell-label">規格內容</span>
+          <div class="cell-text">${item.spec || '-'}</div>
+        </div>
 
-          <div class="col-cell" style="flex: 1; min-width: 140px;">
-            <label>規格描述 (如: 60錠×1盒)</label>
-            <input type="text" id="spec_${code}" value="${item.spec || ''}" oninput="syncField('${code}')">
-          </div>
+        <!-- 現省多少 (自動計算) -->
+        <div class="cell" style="width: 110px;">
+          <span class="cell-label">現省金額</span>
+          <div class="save-badge" id="save_box_${code}">${saveText}</div>
+        </div>
 
-          <div class="col-cell" style="width: 110px;">
-            <label>現省金額</label>
-            <div class="save-box" id="save_box_${code}">省 $${save.toLocaleString()}</div>
-          </div>
-
-          <div class="col-cell" style="width: 140px;">
-            <label>促銷/贈品標註</label>
-            <input type="text" id="gift_${code}" value="${item.giftName || ''}" placeholder="無贈品留空" oninput="syncField('${code}')">
-          </div>
+        <!-- 贈品與活動標註 -->
+        <div class="cell" style="width: 160px;">
+          <span class="cell-label">活動贈品標註 (選填)</span>
+          <input type="text" id="gift_${code}" value="${item.giftName || ''}" placeholder="無贈品留空" oninput="syncGift('${code}')" style="font-size: 12px; font-weight: normal;">
         </div>
       `;
       container.appendChild(div);
     });
   }
 
-  // 實時更新數值與計算現省
-  function syncField(code) {
-    if (!shopData.products[code]) return;
-    const orig = Number(document.getElementById(`orig_${code}`).value) || 0;
-    const sale = Number(document.getElementById(`sale_${code}`).value) || 0;
-    const save = (orig > sale) ? (orig - sale) : 0;
+  // 實時計算優惠價與現省
+  function syncSalePrice(code) {
+    const item = shopData.products[code];
+    if (!item) return;
 
-    shopData.products[code].unitCount = document.getElementById(`unit_${code}`).value;
-    shopData.products[code].originalPrice = orig;
-    shopData.products[code].salePrice = sale;
-    shopData.products[code].saveAmount = save;
-    shopData.products[code].spec = document.getElementById(`spec_${code}`).value;
-    shopData.products[code].giftName = document.getElementById(`gift_${code}`).value;
+    const saleVal = document.getElementById(`sale_${code}`).value.trim();
+    item.salePrice = saleVal;
 
+    const origVal = item.originalPrice;
+    const isPending = (origVal === "待補" || origVal === "" || isNaN(Number(origVal)));
     const saveBox = document.getElementById(`save_box_${code}`);
-    if (saveBox) {
+
+    if (isPending) {
+      saveBox.innerText = "-";
+      item.saveAmount = 0;
+    } else {
+      const origNum = Number(origVal);
+      const saleNum = Number(saleVal) || 0;
+      const save = (origNum > saleNum) ? (origNum - saleNum) : 0;
+      item.saveAmount = save;
       saveBox.innerText = `省 $${save.toLocaleString()}`;
     }
   }
 
+  function syncGift(code) {
+    if (shopData.products[code]) {
+      shopData.products[code].giftName = document.getElementById(`gift_${code}`).value;
+    }
+  }
+
+  // 針對圖一格式進行精準萃取匯入
   function importFromTSV() {
     const raw = document.getElementById("tsvInput").value.trim();
     if (!raw) return alert("請先貼上試算表內容！");
     const rows = raw.split("\n");
+
+    const newProducts = {};
     let count = 0;
 
     rows.forEach(row => {
       const cols = row.split("\t").map(c => c.trim());
-      if (cols[0] === "商品代碼" || !cols[0]) return;
+      const code = cols[0]; // A: 商品代碼
 
-      const code = cols[0];
-      if (!shopData.products[code]) shopData.products[code] = {};
+      // 過濾標題列與空行
+      if (!code || code === "商品代碼") return;
 
-      const series = cols[2] || "";
-      const engName = cols[3] || "";
-      const chName = cols[4] || "";
-      const unit = cols[5] || "1";
+      const series = cols[2] || ""; // C: 系列 (如 AEMIS, B)
+      const engName = cols[3] || ""; // D: 英文
+      const chName = cols[4] || "";  // E: 中文 (如 雙藻錠, 雙藻錠(分享包))
+      const unit = cols[5] || "1";   // F: 組
+      const content = cols[6] || ""; // G: 內容 (如 60, 120)
+      const orig = cols[7] || "待補"; // H: 原價
+      const sale = cols[8] || orig;  // I: 優惠價
 
-      shopData.products[code].series = series;
-      shopData.products[code].unitCount = unit;
-      shopData.products[code].name = `${engName} ${chName} ${unit}組`.trim();
+      const cleanCategory = `【${series || '主打'}】${chName || engName}`;
 
-      if (cols[6]) {
-        shopData.products[code].spec = cols[6] + ` (${unit}組)`;
-      }
+      const origClean = orig.replace(/,/g, '');
+      const saleClean = sale.replace(/,/g, '');
 
-      const parsePrice = (v) => (!v || v === "待補") ? "" : (Number(v.replace(/,/g, '')) || "");
-      const orig = parsePrice(cols[7]);
-      const sale = parsePrice(cols[8]);
-
-      if (orig !== "") shopData.products[code].originalPrice = orig;
-      if (sale !== "") shopData.products[code].salePrice = sale;
-
-      const save = (orig && sale && orig > sale) ? (orig - sale) : 0;
-      shopData.products[code].saveAmount = save;
-
+      newProducts[code] = {
+        series: series,
+        engName: engName,
+        chName: chName,
+        cleanCategory: cleanCategory,
+        unitCount: unit,
+        spec: content ? `${content} (共${unit}組)` : `${unit}組`,
+        originalPrice: origClean,
+        salePrice: saleClean,
+        giftName: ""
+      };
       count++;
     });
 
+    if (count === 0) return alert("辨識失敗，請確認貼上的內容包含商品代碼！");
+
+    shopData.products = newProducts; // 覆蓋舊的混亂資料
     closeModal();
     renderLayout();
-    alert(`🎉 成功匯入並解析 ${count} 筆商品！請檢視並點擊右上角「儲存並發布」！`);
+    alert(`🎉 成功匯入 ${count} 筆純淨商品資料！請確認右側內容無誤後，點擊右上角「儲存並發布」！`);
     document.getElementById("tsvInput").value = "";
   }
 
@@ -477,16 +490,16 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          message: "Update shop-data via Strip List Admin",
+          message: "Update shop-data via Clean Admin Panel",
           content: encoded,
           sha: currentFileSha
         })
       });
 
-      if (!res.ok) throw new Error("儲存失敗，請檢查網路連線");
+      if (!res.ok) throw new Error("儲存失敗，請檢查網路連線或 Token 權限");
       const data = await res.json();
       currentFileSha = data.content.sha;
-      alert("🎉 儲存成功！全站資料已同步更新！");
+      alert("🎉 儲存成功！全站商品庫已即時同步！");
     } catch (e) {
       alert(e.message);
     }

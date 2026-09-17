@@ -49,7 +49,7 @@
       display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0;
     }
     .series-header {
-      padding: 10px 16px 4px 16px; font-size: 11px; font-weight: 700;
+      padding: 12px 16px 4px 16px; font-size: 11px; font-weight: 700;
       color: var(--accent); letter-spacing: 0.05em; text-transform: uppercase;
     }
     .product-btn {
@@ -91,7 +91,7 @@
     .val-code { font-family: monospace; color: var(--accent); background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.2); }
 
     .price-input {
-      width: 110px; padding: 6px 8px; background: var(--input-bg);
+      width: 100px; padding: 6px 8px; background: var(--input-bg);
       border: 1px solid var(--accent); border-radius: 6px; color: #38bdf8;
       font-size: 13px; font-weight: 700; outline: none; transition: 0.15s;
     }
@@ -105,6 +105,14 @@
     .save-tag { color: var(--save); font-weight: 700; }
     .inst-tag { color: var(--inst); font-weight: 600; font-size: 12px; }
 
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none;
+      align-items: center; justify-content: center; z-index: 1000;
+    }
+    .modal-box {
+      background: var(--panel); width: 90%; max-width: 550px; border-radius: 10px;
+      padding: 20px; border: 1px solid var(--border);
+    }
     #loginMask {
       position: fixed; inset: 0; background: var(--bg); display: flex;
       align-items: center; justify-content: center; z-index: 2000;
@@ -128,7 +136,8 @@
 <header>
   <div class="header-left">
     <div class="title">⚡ 促銷中控台</div>
-    <button class="btn btn-sync" id="syncBtn" onclick="fetchFromGoogleSheet()">🔄 一鍵線上同步試算表</button>
+    <button class="btn btn-sync" onclick="fetchFromGoogleSheet()">🔄 一鍵線上同步試算表</button>
+    <button class="btn" onclick="openModal()">📋 手動貼上</button>
     <div style="display: flex; align-items: center; gap: 8px;">
       <span style="font-size: 12px; color: var(--text-muted);">⏰ 倒數截止：</span>
       <input type="datetime-local" id="countdownEnd" style="padding: 4px 8px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 4px; color: #fff; font-size: 12px;">
@@ -146,6 +155,20 @@
   </div>
 </div>
 
+<div id="importModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3 style="margin-bottom: 8px; font-size: 15px;">手動貼上 Google 試算表</h3>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">
+      反白試算表複製後貼上：
+    </p>
+    <textarea id="tsvInput" rows="8" placeholder="在此貼上 (Ctrl+V)..." style="width: 100%; padding: 8px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: #fff; font-size: 12px; outline: none;"></textarea>
+    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="importFromTSV()">解析匯入</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const OWNER = "svokh888-del";
   const REPO = "shop-data";
@@ -155,6 +178,9 @@
   let currentFileSha = "";
   let shopData = { countdownEnd: "", products: {} };
   let selectedProductKey = "";
+
+  function openModal() { document.getElementById("importModal").style.display = "flex"; }
+  function closeModal() { document.getElementById("importModal").style.display = "none"; }
 
   function login() {
     const token = document.getElementById("tokenInput").value.trim();
@@ -323,7 +349,7 @@
           <tr>
             <th style="width: 80px;">代碼</th>
             <th style="width: 75px;">組數</th>
-            <th style="width: 100px;">原價</th>
+            <th style="width: 95px;">原價</th>
             <th style="width: 120px;">優惠特價</th>
             <th style="width: 110px;">規格內容</th>
             <th style="width: 95px;">現省多少</th>
@@ -363,87 +389,112 @@
     instEl.innerHTML = `<span class="inst-tag">${instText}</span>`;
   }
 
-  // 專業 CSV 解析器（支援逗號內含逗號如 "1,980"）
-  function parseCSVToRows(text) {
-    let p = '', c = '', r = [];
-    let q = false;
-    let row = [''];
+  // 標準 CSV 解析器：能夠正確處理雙引號包夾的千分位 "1,980"
+  function parseStandardCSV(text) {
+    const rows = [];
+    let row = [];
+    let cur = "";
+    let inQuotes = false;
+
     for (let i = 0; i < text.length; i++) {
-      c = text[i];
-      let next = text[i+1];
+      const c = text[i];
+      const next = text[i + 1];
+
       if (c === '"') {
-        if (q && next === '"') { row[row.length - 1] += '"'; i++; }
-        else { q = !q; }
-      } else if (c === ',' && !q) {
-        row.push('');
-      } else if ((c === '\r' || c === '\n') && !q) {
-        if (c === '\r' && next === '\n') { i++; }
-        r.push(row);
-        row = [''];
+        if (inQuotes && next === '"') {
+          cur += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (c === ',' && !inQuotes) {
+        row.push(cur.trim());
+        cur = "";
+      } else if ((c === '\r' || c === '\n') && !inQuotes) {
+        if (c === '\r' && next === '\n') i++;
+        row.push(cur.trim());
+        if (row.length > 1 || row[0] !== "") rows.push(row);
+        row = [];
+        cur = "";
       } else {
-        row[row.length - 1] += c;
+        cur += c;
       }
     }
-    if (row.length > 1 || row[0] !== '') { r.push(row); }
-    return r;
+    if (cur || row.length > 0) {
+      row.push(cur.trim());
+      rows.push(row);
+    }
+    return rows;
   }
 
+  // 線上同步
   async function fetchFromGoogleSheet() {
-    const btn = document.getElementById("syncBtn");
     try {
+      const btn = event.target;
+      const originalText = btn.innerHTML;
       btn.innerHTML = "⏳ 抓取中...";
       btn.disabled = true;
 
-      // 加時間戳防止快取
-      const res = await fetch(GSHEET_CSV_URL + "&t=" + new Date().getTime());
+      const res = await fetch(GSHEET_CSV_URL);
       if (!res.ok) throw new Error("無法連線至 Google 試算表");
       const csvText = await res.text();
-      const rows = parseCSVToRows(csvText);
+      
+      const rows = parseStandardCSV(csvText);
+      processParsedRows(rows);
 
-      let count = 0;
-      rows.forEach(cols => {
-        cols = cols.map(c => c.trim());
-        if (cols[0] === "商品代碼" || !cols[0]) return;
-
-        const code = cols[0];
-        if (!shopData.products[code]) shopData.products[code] = {};
-
-        const series = cols[1] || "其他";
-        const english = cols[2] || "";
-        const chinese = cols[3] || "";
-        const unit = cols[4] || "1";
-        const content = cols[5] || "";
-        
-        // 清理金額中的千分號逗號
-        const origVal = cols[6] ? cols[6].replace(/,/g, '').trim() : "";
-        const saleVal = cols[7] ? cols[7].replace(/,/g, '').trim() : "";
-
-        shopData.products[code].series = series;
-        shopData.products[code].english = english;
-        shopData.products[code].chineseName = chinese;
-        shopData.products[code].unitCount = unit;
-        shopData.products[code].spec = content ? `${content} (${unit}組)` : `${unit}組`;
-        shopData.products[code].originalPrice = origVal;
-        shopData.products[code].salePrice = saleVal;
-
-        if (origVal !== "待補" && origVal !== "" && saleVal !== "") {
-          const diff = Number(origVal) - Number(saleVal);
-          shopData.products[code].saveAmount = diff > 0 ? diff : 0;
-        }
-
-        shopData.products[code].installmentText = calcInstallment(saleVal);
-        count++;
-      });
-
-      renderSidebar();
-      btn.innerHTML = "🔄 一鍵線上同步試算表";
+      btn.innerHTML = originalText;
       btn.disabled = false;
-      alert(`🎉 成功解析 ${count} 筆商品！原價與特價已完全歸位，請點擊右上角「儲存並發布」！`);
+      alert("🎉 成功同步！千分位價格已完美對齊！請檢查後點擊「儲存並發布」！");
     } catch (e) {
-      btn.innerHTML = "🔄 一鍵線上同步試算表";
-      btn.disabled = false;
       alert("同步失敗：" + e.message);
     }
+  }
+
+  function processParsedRows(rows) {
+    let count = 0;
+    rows.forEach(cols => {
+      if (!cols[0] || cols[0] === "商品代碼") return;
+
+      const code = cols[0];
+      if (!shopData.products[code]) shopData.products[code] = {};
+
+      const series = cols[1] || "其他";
+      const english = cols[2] || "";
+      const chinese = cols[3] || "";
+      const unit = cols[4] || "1";
+      const content = cols[5] || "";
+      const origVal = cols[6] ? cols[6].replace(/,/g, '') : "";
+      const saleVal = cols[7] ? cols[7].replace(/,/g, '') : "";
+
+      shopData.products[code].series = series;
+      shopData.products[code].english = english;
+      shopData.products[code].chineseName = chinese;
+      shopData.products[code].unitCount = unit;
+      shopData.products[code].spec = content ? `${content} (${unit}組)` : `${unit}組`;
+      shopData.products[code].originalPrice = origVal;
+      shopData.products[code].salePrice = saleVal;
+
+      if (origVal !== "待補" && origVal !== "" && saleVal !== "") {
+        const diff = Number(origVal) - Number(saleVal);
+        shopData.products[code].saveAmount = diff > 0 ? diff : 0;
+      }
+
+      shopData.products[code].installmentText = calcInstallment(saleVal);
+      count++;
+    });
+
+    renderSidebar();
+  }
+
+  // 手動貼上解析
+  function importFromTSV() {
+    const raw = document.getElementById("tsvInput").value.trim();
+    if (!raw) return alert("請貼上試算表內容！");
+    const rows = raw.split("\n").map(line => line.split("\t").map(c => c.trim().replace(/^["']|["']$/g, '')));
+    processParsedRows(rows);
+    closeModal();
+    alert("🎉 手動匯入完成！請確認後點擊「儲存並發布」！");
+    document.getElementById("tsvInput").value = "";
   }
 
   async function saveToGitHub() {
@@ -461,7 +512,7 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          message: "Fix CSV parse and update prices",
+          message: "Fix CSV parsing for comma separated prices",
           content: encoded,
           sha: currentFileSha
         })
@@ -470,7 +521,7 @@
       if (!res.ok) throw new Error("儲存失敗，請檢查網路連線");
       const data = await res.json();
       currentFileSha = data.content.sha;
-      alert("🎉 儲存成功！全站資料庫已同步更新！");
+      alert("🎉 儲存成功！全站資料已同步更新！");
     } catch (e) {
       alert(e.message);
     }

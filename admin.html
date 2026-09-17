@@ -22,7 +22,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-    /* 頂部工具列 */
     header {
       background: var(--panel); border-bottom: 1px solid var(--border);
       padding: 10px 20px; display: flex; align-items: center; justify-content: space-between;
@@ -41,79 +40,81 @@
     .btn-primary { background: var(--primary); color: #022c22; border: none; }
     .btn-primary:hover { background: var(--primary-hover); color: #fff; }
 
-    /* 雙欄工作區 */
     .main-layout { display: flex; flex: 1; overflow: hidden; }
 
-    /* 左側系列清單 */
+    /* 左側清單 */
     .sidebar {
-      width: 240px; background: var(--panel); border-right: 1px solid var(--border);
+      width: 250px; background: var(--panel); border-right: 1px solid var(--border);
       display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0;
     }
-    .sidebar-title {
-      padding: 12px 16px; font-size: 12px; font-weight: 700; color: var(--text-muted);
-      border-bottom: 1px solid var(--border); letter-spacing: 0.05em;
+    .series-header {
+      padding: 10px 16px 4px 16px; font-size: 11px; font-weight: 700;
+      color: var(--accent); letter-spacing: 0.05em; text-transform: uppercase;
     }
-    .series-item {
-      padding: 12px 16px; cursor: pointer; border-bottom: 1px solid rgba(55, 65, 81, 0.4);
+    .product-btn {
+      padding: 10px 16px; cursor: pointer; border-bottom: 1px solid rgba(55, 65, 81, 0.2);
       display: flex; justify-content: space-between; align-items: center; font-size: 13px;
-      transition: 0.15s;
+      transition: 0.15s; color: #d1d5db;
     }
-    .series-item:hover { background: rgba(255,255,255,0.03); }
-    .series-item.active { background: #1e293b; border-left: 4px solid var(--accent); color: #fff; font-weight: 700; }
-    .count-badge { background: #374151; color: #9ca3af; font-size: 11px; padding: 2px 7px; border-radius: 10px; }
+    .product-btn:hover { background: rgba(255,255,255,0.04); color: #fff; }
+    .product-btn.active { background: #1e293b; border-left: 4px solid var(--accent); color: #fff; font-weight: 700; }
+    .count-badge { background: #374151; color: #9ca3af; font-size: 11px; padding: 2px 6px; border-radius: 10px; }
 
-    /* 右側主要內容區 */
+    /* 右側工作區 */
     .content-area { flex: 1; padding: 24px; overflow-y: auto; }
-    .group-wrapper { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+    .group-wrapper { max-width: 1300px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
 
-    /* 商品母卡片 */
     .product-box {
       background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-      overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
     .product-box-title {
-      background: #1e293b; padding: 12px 20px; font-size: 16px; font-weight: 700;
+      background: #1e293b; padding: 14px 20px; font-size: 18px; font-weight: 700;
       color: #fff; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
     }
 
-    /* 長條子規格列 */
+    /* 表格設計 */
     .spec-table { width: 100%; border-collapse: collapse; }
     .spec-table th {
-      background: rgba(0,0,0,0.2); text-align: left; padding: 10px 16px;
+      background: rgba(0,0,0,0.25); text-align: left; padding: 10px 12px;
       font-size: 12px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border);
     }
     .spec-table td {
-      padding: 12px 16px; border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+      padding: 10px 12px; border-bottom: 1px solid rgba(55, 65, 81, 0.4);
       font-size: 13px; vertical-align: middle;
     }
     .spec-table tr:last-child td { border-bottom: none; }
 
-    /* 唯讀標籤風格 */
+    /* 唯讀樣式 */
     .val-pill {
-      display: inline-block; padding: 4px 10px; background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border); border-radius: 6px; font-weight: 600; font-size: 13px; color: #e5e7eb;
+      display: inline-block; padding: 4px 8px; background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); border-radius: 6px; font-weight: 600; font-size: 12px; color: #e5e7eb;
     }
     .val-code { font-family: monospace; color: var(--accent); background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.2); }
 
-    /* 優惠價輸入框 */
+    /* 輸入框 */
     .price-input {
-      width: 120px; padding: 6px 10px; background: var(--input-bg);
+      width: 100px; padding: 6px 8px; background: var(--input-bg);
       border: 1px solid var(--accent); border-radius: 6px; color: #38bdf8;
-      font-size: 14px; font-weight: 700; outline: none; transition: 0.15s;
+      font-size: 13px; font-weight: 700; outline: none; transition: 0.15s;
     }
-    .price-input:focus { box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3); }
+    .text-input {
+      width: 100%; min-width: 130px; padding: 6px 8px; background: var(--input-bg);
+      border: 1px solid var(--border); border-radius: 6px; color: #fff;
+      font-size: 12px; outline: none; transition: 0.15s;
+    }
+    .text-input:focus, .price-input:focus { border-color: var(--primary); }
 
-    /* 現省與分期徽章 */
     .save-tag { color: var(--save); font-weight: 700; }
     .inst-tag { color: var(--inst); font-weight: 600; font-size: 12px; }
 
-    /* 彈窗與登入層 */
+    /* 彈窗與遮罩 */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none;
       align-items: center; justify-content: center; z-index: 1000;
     }
     .modal-box {
-      background: var(--panel); width: 90%; max-width: 540px; border-radius: 10px;
+      background: var(--panel); width: 90%; max-width: 550px; border-radius: 10px;
       padding: 20px; border: 1px solid var(--border);
     }
     #loginMask {
@@ -125,7 +126,6 @@
 </head>
 <body>
 
-<!-- 登入驗證層 -->
 <div id="loginMask">
   <div class="login-box">
     <h3 style="margin-bottom: 12px; font-size: 16px;">後台金鑰驗證</h3>
@@ -137,7 +137,6 @@
   </div>
 </div>
 
-<!-- 頂部工具列 -->
 <header>
   <div class="header-left">
     <div class="title">⚡ 促銷中控台</div>
@@ -152,28 +151,20 @@
   </div>
 </header>
 
-<!-- 主工作雙欄 -->
 <div class="main-layout">
-  <!-- 左側系列清單 -->
-  <div class="sidebar">
-    <div class="sidebar-title">商品系列分類</div>
-    <div id="seriesList"></div>
-  </div>
-
-  <!-- 右側規格清單 -->
+  <div class="sidebar" id="sidebar"></div>
   <div class="content-area">
     <div id="groupWrapper" class="group-wrapper"></div>
   </div>
 </div>
 
-<!-- 匯入彈窗 -->
 <div id="importModal" class="modal-overlay">
   <div class="modal-box">
     <h3 style="margin-bottom: 8px; font-size: 15px;">貼上 Google 試算表內容</h3>
     <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">
-      直接在試算表框選複製（可全選含標題），貼在下方，系統會自動抓取系列與價格：
+      請在試算表直接反白複製（從代碼到分期完整複製貼上，含標題無妨）：
     </p>
-    <textarea id="tsvInput" rows="7" placeholder="在此貼上 (Ctrl+V)..." style="width: 100%; padding: 8px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: #fff; font-size: 12px; outline: none;"></textarea>
+    <textarea id="tsvInput" rows="8" placeholder="在此貼上 (Ctrl+V)..." style="width: 100%; padding: 8px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: #fff; font-size: 12px; outline: none;"></textarea>
     <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
       <button class="btn" onclick="closeModal()">取消</button>
       <button class="btn btn-primary" onclick="importFromTSV()">自動識別匯入</button>
@@ -187,7 +178,7 @@
   const PATH = "data.js";
   let currentFileSha = "";
   let shopData = { countdownEnd: "", products: {} };
-  let currentSeries = "";
+  let selectedProductKey = "";
 
   function openModal() { document.getElementById("importModal").style.display = "flex"; }
   function closeModal() { document.getElementById("importModal").style.display = "none"; }
@@ -224,20 +215,13 @@
       }
       document.getElementById("loginMask").style.display = "none";
       document.getElementById("countdownEnd").value = shopData.countdownEnd || "";
-      renderSeries();
+      renderSidebar();
     } catch (e) {
       alert(e.message);
     }
   }
 
-  // 取得純淨的系列名稱
-  function cleanSeries(item) {
-    let s = (item.series || "").trim().replace(/['"]/g, '');
-    if (!s) s = "其他系列";
-    return s;
-  }
-
-  // 計算分期文字 (公式)
+  // 分期計算 (3000分3期, 6000分6期, 12000分12期，四捨五入)
   function calcInstallment(price) {
     const p = Number(price);
     if (!p || isNaN(p) || p < 3000) return "不能分期";
@@ -247,126 +231,163 @@
     return "不能分期";
   }
 
-  // 渲染左側系列清單 (依系列分類)
-  function renderSeries() {
-    const seriesGroups = {};
+  // 整理分類階層：系列 -> 英文 -> 中文品項
+  function buildHierarchy() {
+    const hierarchy = {};
     for (const [code, item] of Object.entries(shopData.products)) {
-      const s = cleanSeries(item);
-      if (!seriesGroups[s]) seriesGroups[s] = [];
-      seriesGroups[s].push(code);
+      const series = item.series || "其他系列";
+      const english = item.english || "OTHER";
+      const chName = item.chineseName || item.name || code;
+
+      if (!hierarchy[series]) hierarchy[series] = {};
+      if (!hierarchy[series][english]) hierarchy[series][english] = {};
+      if (!hierarchy[series][english][chName]) hierarchy[series][english][chName] = [];
+
+      hierarchy[series][english][chName].push(code);
     }
-
-    const sList = document.getElementById("seriesList");
-    sList.innerHTML = "";
-
-    const keys = Object.keys(seriesGroups);
-    if (!currentSeries || !seriesGroups[currentSeries]) {
-      currentSeries = keys[0] || "";
-    }
-
-    keys.forEach(s => {
-      const div = document.createElement("div");
-      div.className = `series-item ${s === currentSeries ? 'active' : ''}`;
-      div.innerHTML = `
-        <span>${s} 系列</span>
-        <span class="count-badge">${seriesGroups[s].length}</span>
-      `;
-      div.onclick = () => {
-        currentSeries = s;
-        renderSeries();
-      };
-      sList.appendChild(div);
-    });
-
-    renderProductGroups(seriesGroups[currentSeries] || []);
+    return hierarchy;
   }
 
-  // 渲染右側項目 (上方置頂產品名，下方子規格列表)
-  function renderProductGroups(codes) {
+  // 渲染左側 (系列標籤 + 排序後的中文品名按鈕)
+  function renderSidebar() {
+    const hierarchy = buildHierarchy();
+    const sidebar = document.getElementById("sidebar");
+    sidebar.innerHTML = "";
+
+    let firstKey = "";
+
+    // 依系列
+    Object.keys(hierarchy).sort().forEach(series => {
+      const sTitle = document.createElement("div");
+      sTitle.className = "series-header";
+      sTitle.innerText = `${series} 系列`;
+      sidebar.appendChild(sTitle);
+
+      // 依英文排序
+      const engKeys = Object.keys(hierarchy[series]).sort();
+      engKeys.forEach(eng => {
+        const chKeys = Object.keys(hierarchy[series][eng]).sort();
+        chKeys.forEach(chName => {
+          const codes = hierarchy[series][eng][chName];
+          if (!firstKey) firstKey = chName;
+
+          const btn = document.createElement("div");
+          btn.className = `product-btn ${chName === (selectedProductKey || firstKey) ? 'active' : ''}`;
+          btn.innerHTML = `
+            <span>${chName}</span>
+            <span class="count-badge">${codes.length}組</span>
+          `;
+          btn.onclick = () => {
+            selectedProductKey = chName;
+            renderSidebar();
+            renderContent(chName, codes);
+          };
+          sidebar.appendChild(btn);
+        });
+      });
+    });
+
+    if (!selectedProductKey) selectedProductKey = firstKey;
+    // 找出當前選中的 codes
+    let currentCodes = [];
+    for (const s of Object.keys(hierarchy)) {
+      for (const e of Object.keys(hierarchy[s])) {
+        if (hierarchy[s][e][selectedProductKey]) {
+          currentCodes = hierarchy[s][e][selectedProductKey];
+          break;
+        }
+      }
+    }
+    renderContent(selectedProductKey, currentCodes);
+  }
+
+  // 渲染右側內容
+  function renderContent(chName, codes) {
     const container = document.getElementById("groupWrapper");
     container.innerHTML = "";
+    if (!codes || codes.length === 0) return;
 
-    // 依母品名分組 (例如把雙藻錠與分享包分開)
-    const productGroups = {};
+    const box = document.createElement("div");
+    box.className = "product-box";
+
+    let rowsHtml = "";
     codes.forEach(code => {
       const item = shopData.products[code];
-      const pName = (item.baseName || item.name || code).replace(/\s*\d+\s*(組|包|盒).*$/, '').trim();
-      if (!productGroups[pName]) productGroups[pName] = [];
-      productGroups[pName].push(code);
+      const origRaw = item.originalPrice;
+      const isOrigPending = (origRaw === "待補" || origRaw === "" || origRaw === undefined);
+      const origDisplay = isOrigPending ? "待補" : `$${Number(origRaw).toLocaleString()}`;
+      const saleVal = item.salePrice ?? "";
+
+      // 計算現省
+      let saveHtml = "-";
+      if (!isOrigPending && saleVal !== "" && saleVal !== "待補") {
+        const save = Number(origRaw) - Number(saleVal);
+        saveHtml = save > 0 ? `<span class="save-tag">省 $${save.toLocaleString()}</span>` : `$0`;
+      }
+
+      // 計算分期
+      const instText = calcInstallment(saleVal);
+
+      rowsHtml += `
+        <tr>
+          <td><span class="val-pill val-code">${code}</span></td>
+          <td><span class="val-pill">${item.unitCount || '1'} 組</span></td>
+          <td><span class="val-pill">${origDisplay}</span></td>
+          <td>
+            <input type="text" class="price-input" id="sale_${code}" value="${saleVal}" placeholder="優惠價" oninput="handleRowChange('${code}', '${origRaw}')">
+          </td>
+          <td><span class="val-pill">${item.spec || '-'}</span></td>
+          <td id="save_${code}">${saveHtml}</td>
+          <td id="inst_${code}"><span class="inst-tag">${instText}</span></td>
+          <td>
+            <input type="text" class="text-input" id="promo_${code}" value="${item.promoDiscount || ''}" placeholder="例: 滿2盒9折 / 買二送一" oninput="handleRowChange('${code}', '${origRaw}')">
+          </td>
+          <td>
+            <input type="text" class="text-input" id="gift_${code}" value="${item.giftReward || ''}" placeholder="例: 體驗包 / 滿額保溫瓶" oninput="handleRowChange('${code}', '${origRaw}')">
+          </td>
+        </tr>
+      `;
     });
 
-    for (const [pName, subCodes] of Object.entries(productGroups)) {
-      const box = document.createElement("div");
-      box.className = "product-box";
-
-      let rowsHtml = "";
-      subCodes.forEach(code => {
-        const item = shopData.products[code];
-        const origRaw = item.originalPrice;
-        const isOrigPending = (origRaw === "待補" || origRaw === "" || origRaw === undefined);
-        const origDisplay = isOrigPending ? "待補" : `$${Number(origRaw).toLocaleString()}`;
-        const saleVal = item.salePrice ?? "";
-        
-        // 計算現省
-        let saveHtml = "-";
-        if (!isOrigPending && saleVal !== "") {
-          const save = Number(origRaw) - Number(saleVal);
-          saveHtml = save > 0 ? `<span class="save-tag">省 $${save.toLocaleString()}</span>` : `$0`;
-        }
-
-        // 計算分期
-        const instText = calcInstallment(saleVal);
-
-        rowsHtml += `
+    box.innerHTML = `
+      <div class="product-box-title">
+        <span>📦 ${chName}</span>
+        <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">共 ${codes.length} 個組數品項</span>
+      </div>
+      <table class="spec-table">
+        <thead>
           <tr>
-            <td><span class="val-pill val-code">${code}</span></td>
-            <td><span class="val-pill">${item.unitCount || '1'} 組</span></td>
-            <td><span class="val-pill">${origDisplay}</span></td>
-            <td>
-              <input type="text" class="price-input" id="sale_${code}" value="${saleVal}" placeholder="輸入特價" oninput="handlePriceChange('${code}', '${origRaw}')">
-            </td>
-            <td><span class="val-pill">${item.spec || '-'}</span></td>
-            <td id="save_${code}">${saveHtml}</td>
-            <td id="inst_${code}"><span class="inst-tag">${instText}</span></td>
+            <th style="width: 80px;">代碼</th>
+            <th style="width: 75px;">組數</th>
+            <th style="width: 95px;">原價</th>
+            <th style="width: 120px;">優惠特價</th>
+            <th style="width: 110px;">規格內容</th>
+            <th style="width: 95px;">現省多少</th>
+            <th style="width: 160px;">分期付款</th>
+            <th style="width: 170px;">活動折扣設定</th>
+            <th style="width: 170px;">滿額贈禮</th>
           </tr>
-        `;
-      });
-
-      box.innerHTML = `
-        <div class="product-box-title">
-          <span>📦 ${pName}</span>
-          <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">共 ${subCodes.length} 個組數規格</span>
-        </div>
-        <table class="spec-table">
-          <thead>
-            <tr>
-              <th style="width: 100px;">代碼</th>
-              <th style="width: 90px;">組數</th>
-              <th style="width: 110px;">原價 (固定)</th>
-              <th style="width: 150px;">優惠特價 (點此修改)</th>
-              <th>規格內容 (固定)</th>
-              <th style="width: 120px;">現省多少</th>
-              <th style="width: 170px;">分期付款</th>
-            </tr>
-          </thead>
-          <tbody>${rowsHtml}</tbody>
-        </table>
-      `;
-      container.appendChild(box);
-    }
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    `;
+    container.appendChild(box);
   }
 
-  // 特價即時輸入聯動
-  function handlePriceChange(code, origRaw) {
-    const inputVal = document.getElementById(`sale_${code}`).value.trim();
-    shopData.products[code].salePrice = inputVal;
+  // 輸入動態聯動
+  function handleRowChange(code, origRaw) {
+    const saleVal = document.getElementById(`sale_${code}`).value.trim();
+    const promoVal = document.getElementById(`promo_${code}`).value.trim();
+    const giftVal = document.getElementById(`gift_${code}`).value.trim();
 
-    // 現省計算
+    shopData.products[code].salePrice = saleVal;
+    shopData.products[code].promoDiscount = promoVal;
+    shopData.products[code].giftReward = giftVal;
+
+    // 現省
     const saveEl = document.getElementById(`save_${code}`);
-    if (origRaw !== "待補" && origRaw !== "" && inputVal !== "") {
-      const orig = Number(origRaw);
-      const sale = Number(inputVal);
-      const save = orig - sale;
+    if (origRaw !== "待補" && origRaw !== "" && saleVal !== "") {
+      const save = Number(origRaw) - Number(saleVal);
       shopData.products[code].saveAmount = save > 0 ? save : 0;
       saveEl.innerHTML = save > 0 ? `<span class="save-tag">省 $${save.toLocaleString()}</span>` : `$0`;
     } else {
@@ -374,14 +395,14 @@
       shopData.products[code].saveAmount = 0;
     }
 
-    // 分期計算
+    // 分期
     const instEl = document.getElementById(`inst_${code}`);
-    const instText = calcInstallment(inputVal);
+    const instText = calcInstallment(saleVal);
     shopData.products[code].installmentText = instText;
     instEl.innerHTML = `<span class="inst-tag">${instText}</span>`;
   }
 
-  // 匯入試算表
+  // 精準對齊附圖格式匯入
   function importFromTSV() {
     const raw = document.getElementById("tsvInput").value.trim();
     if (!raw) return alert("請貼上試算表內容！");
@@ -389,49 +410,40 @@
     let count = 0;
 
     rows.forEach(row => {
-      const cols = row.split("\t").map(c => c.trim());
+      const cols = row.split("\t").map(c => c.trim().replace(/['"]/g, ''));
       if (cols[0] === "商品代碼" || !cols[0]) return;
 
-      const code = cols[0];
+      const code = cols[0]; // A: 商品代碼
       if (!shopData.products[code]) shopData.products[code] = {};
 
-      const series = cols[2] ? cols[2].replace(/['"]/g, '').trim() : "其他";
-      const engName = cols[3] || "";
-      const chName = cols[4] || "";
-      const unit = cols[5] || "1";
+      const series = cols[1] || "其他";       // B: 系列
+      const english = cols[2] || "";          // C: 英文
+      const chinese = cols[3] || "";          // D: 中文
+      const unit = cols[4] || "1";            // E: 組
+      const content = cols[5] || "";          // F: 內容
+      const origVal = cols[6] ? cols[6].replace(/,/g, '') : ""; // G: 原價
+      const saleVal = cols[7] ? cols[7].replace(/,/g, '') : ""; // H: 優惠價
 
       shopData.products[code].series = series;
-      shopData.products[code].baseName = `${engName} ${chName}`.trim();
-      shopData.products[code].name = `${engName} ${chName} ${unit}組`.trim();
+      shopData.products[code].english = english;
+      shopData.products[code].chineseName = chinese;
       shopData.products[code].unitCount = unit;
-
-      if (cols[6]) {
-        shopData.products[code].spec = `${cols[6]}粒 (${unit}組)`;
-      }
-
-      // 原價處理 (如實記錄待補或金額)
-      const origVal = cols[7] ? cols[7].replace(/,/g, '').trim() : "";
+      shopData.products[code].spec = content ? `${content} (${unit}組)` : `${unit}組`;
       shopData.products[code].originalPrice = origVal;
-
-      // 優惠價處理
-      const saleVal = cols[8] ? cols[8].replace(/,/g, '').trim() : "";
       shopData.products[code].salePrice = saleVal;
 
-      // 現省計算
       if (origVal !== "待補" && origVal !== "" && saleVal !== "") {
         const diff = Number(origVal) - Number(saleVal);
         shopData.products[code].saveAmount = diff > 0 ? diff : 0;
       }
 
-      // 分期計算
       shopData.products[code].installmentText = calcInstallment(saleVal);
-
       count++;
     });
 
     closeModal();
-    renderSeries();
-    alert(`🎉 匯入解析完成！已成功抓取 ${count} 筆資料。請點擊右上角「儲存並發布」！`);
+    renderSidebar();
+    alert(`🎉 成功匯入 ${count} 筆商品！已依系列與中文品名分類，請點擊右上角「儲存並發布」！`);
     document.getElementById("tsvInput").value = "";
   }
 
@@ -450,7 +462,7 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          message: "Update shop-data via Clean Series Admin",
+          message: "Update shop-data with new hierarchy and promo fields",
           content: encoded,
           sha: currentFileSha
         })
@@ -459,7 +471,7 @@
       if (!res.ok) throw new Error("儲存失敗，請檢查網路連線");
       const data = await res.json();
       currentFileSha = data.content.sha;
-      alert("🎉 儲存成功！全站資料已同步更新！");
+      alert("🎉 儲存成功！全站資料庫已同步更新！");
     } catch (e) {
       alert(e.message);
     }
